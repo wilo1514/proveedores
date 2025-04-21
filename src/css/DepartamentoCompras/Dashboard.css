@@ -1,0 +1,43 @@
+/* .container_dashboard{
+    padding: 2rem!important;
+} */
+
+@media screen and (max-width: 899px) {
+    .container_dashboard {
+        padding: 0%;
+        margin: 0%;
+    }
+
+    }
+
+.carta-notificaciones{
+    align-items: center;
+    -webkit-backdrop-filter: blur(8.5px);
+    background: #151635 !important;
+    box-shadow: 0 2px 2px 0 rgba(12, 12, 17, 0.09);
+    border-radius: 10px;
+    border: 1px solid #ECEEF6;
+    color: #ffff;
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    height: auto;
+    width: 100%;
+    padding: 1rem;
+  }
+
+.inputsDashboard{
+    min-width: 100% !important;
+    margin-top: 20px !important;
+}
+
+.boton-dashboard{
+    min-width: 100% !important;
+    background-color: #06ac2e !important ;
+    margin-top: 20px !important;
+}
+
+.custom-textfield {
+    padding-top: 1rem;
+    padding-bottom: 0.5rem;
+}

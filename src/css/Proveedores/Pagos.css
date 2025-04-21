@@ -1,0 +1,31 @@
+.texto_pagos{
+    font-size: 1rem;
+    font-family: Roboto, Helvetica, Arial, sans-serif;
+    margin-bottom: 0.8rem;
+    gap: 10px;
+}
+
+.titulo_pagos{
+    font-weight: 700;
+    font-family: Roboto, Helvetica, Arial, sans-serif;
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.datos_beneficiario {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Espacio entre columnas */
+    margin-bottom: 2rem;
+    border: 1px solid #a3a0a0;
+    border-radius: 5px;
+    padding: 20px;
+  }
+  
+  .texto_factura {
+    flex: 1 1 48%; /* Cada elemento ocupa casi la mitad del contenedor */
+    box-sizing: border-box;
+    margin: 0;
+  }
+  

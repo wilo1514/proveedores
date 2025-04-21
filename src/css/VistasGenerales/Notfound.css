@@ -1,0 +1,57 @@
+.container-denied {
+    height: 100vh;
+    width: 100vw;
+    display: grid;
+    place-items: center;
+}
+.title-denied {
+    color: black;
+    margin-bottom: 2rem;
+    margin-top: 2rem;
+    font-size: 3rem;
+}
+.text-denied {
+    color: black;
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+}
+.button-denied {
+    background-color: rgb(107 199 41) !important;
+    padding: 0.5rem;
+    font-size: 1rem !important;
+}
+
+
+.not2 {
+    height: 100vh;
+    display: grid;
+    width: 100% !important;
+    place-items: center;
+}
+
+.textosistemas{
+    font-size: 1rem;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: 550 !important;
+    color: #1B365D !important;
+    margin: 0% !important;
+}
+
+.RegistroSistemas {
+    color: #1B365D !important;
+    justify-items: center;
+    align-items: center;
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 1.8rem;
+    margin-top: 2rem !important;
+    font-weight: 550 !important;
+}
+
+.image{
+    display: block;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}

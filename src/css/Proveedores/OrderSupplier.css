@@ -1,0 +1,319 @@
+.inicio_pedido{
+    /* padding: 0rem 2rem 0rem 0rem; */
+}
+
+.pruebas{
+  height: 100% !important;
+  background: #151635;
+}
+
+.proforma-item{
+    /* background-color: #ECF0F1; */
+    border: 1px solid #ced4da;
+    background-color: #ffff;
+    border-radius: 7px;
+    padding: 0.8rem;
+    margin-bottom: 10px;
+    width: 350px;
+  }
+  .proforma-item-p{
+    margin: 0;
+    color: #839192;
+    text-align: right;
+    font-size: medium;
+  }
+  .proforma-total{
+    border-radius: 7px;
+    padding: 0.8rem;
+    background-color: #151635;
+    width: 30%;
+    margin: 10px;
+  }
+  .proforma-total-p{
+    color: white;
+    margin: 0;
+    font-weight: bold;
+    text-align: right;
+    font-size: large;
+  }
+
+  @media screen and (max-width: 899px) {
+    .pruebas {
+      height: auto;
+    }
+    .proforma-item,.proforma-total{
+      width: 100%;
+    }
+    }
+
+    
+  .borde-codigo {
+    border: 1px solid #06ac2e  ;
+    background-color: #06ac2e  !important;
+    color: #FFF ;
+    font-family: "Roboto","Helvetica","Arial",sans-serif;
+    font-size: 18px !important;
+    height: auto;
+    border-radius: 16px;
+    letter-spacing: normal;
+    padding: 10px;
+    width: 100%;
+    margin-bottom: 10px;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.boton-pedidos{
+    min-width: 100% !important;
+    background-color: #06ac2e !important ;
+    margin-top: 2rem !important ;
+}
+
+.boton-productos{
+  background-color: #06ac2e !important ;
+  margin-top: 1.3rem !important;
+}
+
+.boton-cancelar{
+  border-color: #06ac2e !important ;
+  color: #06ac2e !important;
+  margin-top: 1.3rem !important;
+}
+
+.card-body-info {
+    color: black !important;
+    -webkit-user-select: none;
+    user-select: none;
+    height: 100%;
+    width: 100% !important;
+    align-items: center;
+    padding: 20px;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 5px;
+}
+
+.lateralderecho{
+    margin-top: 2rem !important;
+}
+.iconos {
+    background-color: #68dc1b !important;
+    color: #f4f4f4 !important;
+    border-radius: 6px !important;
+}
+.seleccionador {
+    border: none !important;
+}
+.nombres{
+    color: #FFF;
+    padding-top: 1rem;
+}
+.laterales {
+  width: 100% !important;
+  background-color: #ffff;
+}
+.autocomplete {
+  width: 100% !important;
+}
+.buscar{
+  background: #fff !important;
+  border: 1px solid #dee2e6;
+}
+.css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root.Mui-checked, .css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root.MuiCheckbox-indeterminate{
+  color: #cacdd0 !important;
+}
+.checkgeneral{
+  padding: 0px 8px 4px 3px !important ;
+}
+.encabezadosTabal{
+  padding: 32px 0px 16px 0px !important;
+  font-weight: 700 !important;
+}
+.boton-cancela{
+  background: #ecf0f1 !important;
+  color: #141533 !important;
+  min-width: 100% !important;
+  margin-top: 2rem !important;
+}
+.pruebas{
+height: 100vh;
+background: #151635;
+}
+
+.proforma-boton{
+  border-radius: 7px;
+  padding: 0.8rem;
+  width: 30%;
+}
+.proforma-item-p{
+  margin: 0;
+  color: #839192;
+  text-align: right;
+  font-size: medium;
+}
+.proforma-total{
+  border-radius: 7px;
+  padding: 0.8rem;
+  background-color: #151635;
+  width: 30%;
+  margin: 0px;
+}
+.proforma-total-p{
+  color: white;
+  margin: 0;
+  font-weight: bold;
+  text-align: right;
+  font-size: large;
+}
+
+
+.borde-codigo {
+  border: 1px solid #06ac2e  ;
+  background-color: #06ac2e  !important;
+  color: #FFF ;
+  font-family: "Roboto","Helvetica","Arial",sans-serif;
+  font-size: 18px !important;
+  height: auto;
+  border-radius: 16px;
+  letter-spacing: normal;
+  padding: 10px;
+  width: 100%;
+  margin-bottom: 10px;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.boton-productos{
+background-color: #06ac2e !important ;
+margin-top: 1.3rem !important;
+}
+
+
+
+.card-body-info {
+  color: black !important;
+  -webkit-user-select: none;
+  user-select: none;
+  height: 100%;
+  width: 100% !important;
+  align-items: center;
+  padding: 20px;
+}
+
+.lateralderecho{
+  margin-top: 2rem !important;
+}
+
+.iconos {
+  background-color: #68dc1b !important;
+  color: #f4f4f4 !important;
+  border-radius: 6px !important;
+}
+
+.seleccionador {
+  border: none !important;
+}
+
+.input-label-autor{
+  color: #151635;;
+  margin-bottom: 0.5rem !important;
+}
+
+.laterales {
+width: 100% !important;
+background-color: #ffff;
+}
+
+.autocomplete {
+width: 100% !important;
+}
+
+.buscar{
+background: #fff !important;
+border: 1px solid #dee2e6;
+}
+
+.css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root.Mui-checked, .css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root.MuiCheckbox-indeterminate{
+color: #cacdd0 !important;
+}
+
+.checkgeneral{
+padding: 0px 8px 4px 3px !important ;
+}
+
+.encabezadosTabal{
+padding: 32px 0px 16px 0px !important;
+font-weight: 700 !important;
+}
+
+
+.transparent-input{
+min-width: 100%;
+padding: 1rem;
+margin-top: 10px;
+background: transparent;
+color: #cacdd0;
+border: 1px solid #cacdd0;
+border-radius: 5px;
+font-size: 16px;
+}
+
+.proforma-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 16px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+
+.alert-container {
+  max-height: 400px; /* set the max height */
+  overflow-y: auto; /* enable vertical scroll */
+}
+
+.alert-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ccc;
+  margin-top: 10px;
+}
+
+.alert-table th, .alert-table td {
+  border: 1px solid #ccc;
+  padding: 5px;
+  text-align: left;
+}
+
+.alert-table th {
+  background-color: #7c7c7e;
+  color: #fff;
+  font-weight: 300;
+  align-items: center;
+}
+
+.alert-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Media query for phone screens */
+@media (max-width: 600px) {
+  .swal2-popup {
+      width: 100% !important; /* Make SweetAlert2 popup 100% width */
+  }
+
+  .alert-container {
+      max-height: 50vh; /* Adjust max-height for smaller screens */
+  }
+}

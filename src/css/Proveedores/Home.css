@@ -1,0 +1,61 @@
+.container-imageHome {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 92vh;
+  }
+  
+  @media (max-width: 899px) {
+    .container-imageHome  {
+        display: none;
+    }
+  }
+  
+  .image-home {
+    background-size: cover;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .container-home {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100% !important;
+    width: 100%;
+    font-family: "Raleway", sans-serif;
+    padding: 0% !important;
+  }
+
+  .container-rightHome {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 8%;
+  }
+
+  .title-home {
+    color: #1B365D;
+    font-size: 2.2rem !important;
+    font-weight: 550 !important;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  .button-disystem {
+    background-color: #151635 !important;
+  }
+
+  .cards-Home {
+    width: 100%;
+    height: auto;
+    background-color: #f5f5f5;
+  }

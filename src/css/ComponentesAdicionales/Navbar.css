@@ -1,0 +1,166 @@
+.navbar {
+    height: 60px;
+    background-color: #151635;
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .navbar-logo {
+    display: flex;
+    align-items: center;
+  }
+  
+  .navbar-links {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .navbar-menu {
+    display: none; /* Ocultar en vistas de escritorio */
+  }
+  
+  @media (max-width: 768px) {
+    .navbar-links {
+      display: none; /* Ocultar en vistas móviles */
+    }
+    .navbar-menu {
+      display: block;
+    }
+  }
+  
+
+/* .page-content {
+    margin-top: 60px;
+} */
+
+.navbar-logo img {
+    height: 40px;
+}
+
+.navbar-links {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    justify-content: flex-end;
+    padding: 1rem;
+}
+
+.navbar-link {
+    color: white;
+    margin: 0 15px;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.navbar-link-mobile {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: white;
+    margin: 0 15px;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.navbar-link:hover {
+    color: #06ac2e;
+}
+
+.navbar-link.active {
+    color: #06ac2e;
+    text-decoration-thickness: 4px !important;
+    text-decoration-line: underline !important;
+    text-underline-offset: 4px !important;
+    cursor: pointer !important;
+}
+
+.navbar-avatar {
+    background-color: transparent;
+    border-radius: 50%;
+    width: 44px; /* Ajustado para coincidir con la altura de la imagen */
+    height: 44px; /* Ajustado para coincidir con la altura de la imagen */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    overflow: hidden; /* Esto asegura que la imagen no sobresalga del contenedor circular */
+  }
+  
+  .navbar-avatar img {
+    width: 100%; /* La imagen ocupará todo el ancho del contenedor */
+    height: 100%; /* La imagen ocupará todo el alto del contenedor */
+    object-fit: cover; /* Esto asegura que la imagen mantenga su proporción y se recorte si es necesario */
+    border-radius: 20%; /* Hace que la imagen también sea circular */
+  }
+  
+
+.navbar-dropdown {
+    position: absolute;
+    top: 50px;
+    right: 10px;
+    background-color: white;
+    color: black;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden;
+    z-index: 4;
+}
+
+.navbar-dropdown-item {
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.navbar-dropdown-item:hover {
+    background-color: #f0f0f0;
+}
+
+.navbar-dropdown-item-mobile {
+    padding: 10px 20px;
+    cursor: pointer;
+    color: #ffff;
+}
+
+.navbar-menu {
+    display: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.navbar-mobile-menu {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    background-color: #151635;
+    padding: 10px;
+    z-index: 3;
+    width: 60%;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.navbar-mobile-menu .navbar-link,
+.navbar-mobile-menu .navbar-dropdown-item {
+    margin: 10px 0;
+}
+
+@media (max-width: 768px) {
+    .navbar-links.desktop {
+        display: none;
+    }
+
+    .navbar-menu {
+        display: block;
+    }
+
+    .navbar-mobile-menu {
+        display: flex;
+    }
+}

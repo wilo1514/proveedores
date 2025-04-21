@@ -1,0 +1,167 @@
+/* Sidebar */
+.sidebar {
+  width: 70px;
+  height: 100vh;
+  padding: 10px 0;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  left: 0;
+  top: 0;
+  overflow-y: auto;
+  transition: width 0.3s;
+  background-color: #ffff;
+  z-index: 1050;
+}
+
+/* Scrollbar Styles */
+.sidebar::-webkit-scrollbar {
+  width: 8px; /* Ancho de la barra de desplazamiento */
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background-color: #ffffff; /* Fondo de la barra de desplazamiento */
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: #f3f3f3; /* Color del pulgar (scrollbar) */
+  border-radius: 10px;
+}
+
+
+.sidebar.expanded {
+  width: 250px;
+  z-index: 1050;
+}
+
+.sidebar.collapsed {
+  max-width: 70px;
+  z-index: 1050;
+}
+
+.sidebar:hover {
+  width: 250px;
+}
+
+/* Navigation Items */
+.nav ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+
+/* Alineación de los ítems en el sidebar colapsado */
+.nav li {
+  display: flex;
+  justify-content: center; /* Centra el contenido horizontalmente */
+  align-items: center; /* Centra verticalmente */
+  align-items: center;
+  margin-bottom: 10px;
+
+}
+
+/* Alineación de los ítems en el sidebar expandido */
+.sidebar.expanded .nav li {
+  justify-content: flex-start; /* Alinea a la izquierda cuando está expandido */
+  padding-left: 10px; /* Añade un padding para separar el ícono del borde */
+}
+
+
+.nav-item {
+  color: black; /* Color de texto negro */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
+  border-radius: 4px;
+  transition: background-color 0.3s, color 0.3s;
+  text-decoration: none;
+}
+
+.nav-item:hover {
+  background-color: #f0f0f0; /* Fondo gris claro al pasar el mouse */
+}
+
+.nav-item.active {
+  background-color: #e0e0e0; /* Fondo gris claro para la vista seleccionada */
+  font-weight: bold;
+  padding: 1rem;
+}
+
+.nav-item.active .icon {
+  color: green; /* Cambia el color del ícono a verde */
+}
+
+/* Icons */
+.icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 0;
+  transition: color 0.3s;
+}
+
+/* Section Labels */
+.section-label {
+  font-weight: bold;
+  text-align: left;
+  white-space: nowrap;
+  margin: 10px 0;
+  transition: all 0.3s;
+  padding: 1rem;
+  background-color: #f0f4f9;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.section-label.collapsed {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 24px;
+  background-color:transparent;
+  /* border-top: 1px solid #ddd; */
+  color: transparent;
+}
+
+.section-label.expanded {
+  display: block;
+  color: #000;
+}
+
+/* Nav Text */
+.nav-text.hidden {
+  display: none;
+}
+
+.nav-text.visible {
+  display: inline;
+  margin-left: 8px;
+}
+
+/* Transition and visibility */
+.sidebar.expanded .label {
+  display: inline;
+}
+
+.sidebar.expanded .nav-item {
+  justify-content: flex-start; /* Alinea los ítems a la izquierda cuando está expandido */
+  padding: 10px; /* Restaura el padding original */
+}
+
+.sidebar.expanded .icon {
+  margin-right: 10px; /* Restaura el margen derecho para el ícono */
+}
+
+.side-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Si quieres centrar verticalmente, asegúrate de que el contenedor tenga una altura definida */
+  width: 100%; /* Asegúrate de que el contenedor ocupe todo el ancho disponible */
+  text-align: center;
+}
+
+.side-logo img {
+  height: 40px; /* Altura del logo */
+}
+

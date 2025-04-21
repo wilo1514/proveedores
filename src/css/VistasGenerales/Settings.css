@@ -1,0 +1,185 @@
+/* .container-settings{  
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 89vh !important;
+    background-size: cover;
+    background-position: center center;
+    background-color: #f0f4f9;
+}
+
+
+
+.text-config{
+    font-size: 1rem;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: 400 !important;
+    color: #1B365D !important;
+}
+
+.container-password{
+    padding-left: 4%;
+    padding-right: 4%;
+    padding-bottom: 2%;
+}
+
+.boton-contraseña {
+    min-width: 100%;
+    height: 50px;
+    background-color: #06ac2e !important;
+    color: #fff !important;
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+    margin-top: 2rem !important;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 5px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+  }
+  .boton-contraseña :hover {
+    background-color: rgb(248 249 250) !important;
+    border: 1px solid #1B365D;
+    color: #1B365D !important;
+    transition: width 0.3s ease;
+  } */
+
+
+
+  .text-settings{
+    font-size: 1.5rem !important;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    margin-top: 2% !important;
+    font-weight: 550 !important;
+    color: #1B365D !important;
+}
+  
+  .text-config {
+    text-align: left;
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: 400 !important;
+    color: #1B365D !important;
+    margin: 1rem;
+  }
+  
+  .container-settings {
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: #f0f4f9;
+    height: 90vh;
+  }
+  
+  .card {
+    width: 100%;
+    /* box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow-y: auto;
+    background-color: white;
+    padding: 1rem; */
+  }
+  
+  .card-header {
+    padding: 1rem;
+    background-color: white;
+    text-align: center;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .container-password {
+    /* margin-top: 1rem; */
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .instructions {
+    flex: 1;
+    min-width: 40%;
+  }
+  
+  .inputs {
+    flex: 2;
+    min-width: 60%;
+  }
+  
+ 
+  
+  .input-group {
+    margin-bottom: 16px;
+  }
+  
+  .input-group label {
+    display: block;
+    margin-bottom: 8px;
+  }
+  
+  .input-group input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    box-sizing: border-box;
+  }
+  
+  .input-group input.error {
+    border: 2px solid red;
+  }
+  
+  .helper-text {
+    color: red;
+    margin-top: 4px;
+    display: block;
+  }
+  
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .checkbox-group input {
+    margin-right: 8px;
+  }
+  
+  .button-group {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+  }
+  
+  
+  @media (max-width: 768px) {
+    .card {
+      width: 100%;
+    }
+  
+    .container-password {
+      flex-direction: column;
+    }
+  
+    .instructions,
+    .inputs {
+      min-width: unset;
+    }
+  }
+  
+
+  .text-register{
+    /* padding: 2rem; */
+    /* position: relative;  */
+    /* z-index: 2;  */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* height: 100% !important;  */
+    width: 100%;
+}

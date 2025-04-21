@@ -1,0 +1,152 @@
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Raleway', sans-serif;
+}
+
+.container-login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh !important;
+  background-image: url('../../assets/images/fondo-022.avif');
+  background-size: cover;
+  background-position: center center;
+  background-color: #f0f0f0;
+}
+
+.transparent-container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  height: auto;
+  width: 35vw;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(8.5px);
+  -webkit-backdrop-filter: blur(8.5px);
+  border-radius: 30px;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.4rem;
+}
+
+@media (max-width: 600px) {
+  .transparent-container {
+    max-width: 80%;
+    width: 70vw !important;
+  }
+}
+
+.logo-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logo {
+  width: 200px;
+  height: auto;
+}
+
+.login-form {
+  width: 100%;
+}
+
+.InputContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  height: 20%;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.styled-input {
+  background-color: #fff !important;
+  border-radius: 0.5rem;
+  margin-bottom: 10px;
+  width: 80%;
+  height: 3rem;
+  padding: 1rem;
+  border: none;
+  outline: none;
+  color: #0e0d0d;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.styled-input:focus {
+  box-shadow: 0 0 0 0.2rem #39A935;
+  background-color: #ffff !important;
+}
+
+.styled-input::placeholder {
+  color: #0e0d0d;
+  font-weight: 100;
+  font-size: 1rem;
+}
+
+.ButtonContainer {
+  margin: 0.5rem 0 2rem 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.styled-button {
+  background: rgba(103, 201, 0);
+  text-transform: uppercase;
+  letter-spacing: 0.2rem;
+  margin-top: 20px;
+  width: 80%;
+  height: 3rem;
+  border: none;
+  color: white;
+  border-radius: 1rem;
+  cursor: pointer;
+}
+
+.styled-button-recuperar {
+  color: #030134;
+  background-color: transparent;
+  font-family: Arial, sans-serif;
+  font-size: 1rem;
+  text-transform: capitalize;
+  letter-spacing: -0.3px;
+  display: inline-block;
+  border: none;
+  padding: 1rem;
+}
+
+.styled-button-recuperar:hover {
+  color: rgb(177, 177, 178);
+}
+
+.InputLabel {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  font-family: Arial, sans-serif;
+  font-size: 1rem;
+  color: #030134;
+  text-transform: capitalize;
+  letter-spacing: -0.3px;
+}
+
+.container-web {
+  margin-bottom: 20px;
+}
+
+.recuperar_contraseña{
+  color: #030134;
+  text-transform: none;
+  align-items: end;
+  justify-content: center;
+  display: flex;
+  margin-bottom: 2rem;
+  letter-spacing: -0.1px;
+}

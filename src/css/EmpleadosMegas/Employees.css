@@ -1,0 +1,110 @@
+ .panel {
+  position: relative;
+  border-radius: 0.375rem;
+  margin-top: 1.5rem !important;
+  align-items: center;
+  background-color: #fff;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  overflow-x: auto;
+}
+
+.panel2 {
+  position: relative;
+  border-radius: 0.375rem;
+  margin-top: 1.5rem !important;
+  align-items: center;
+  background-color: #fff;
+  width: 50%;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.panel-title {
+  color: rgb(47, 55, 70);
+  font-weight: 600;
+  margin-bottom: 2rem;
+}
+
+
+.panel-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center; /* Alinea todos los elementos al inicio del contenedor */
+}
+
+.panel-item{
+  flex: 1 1 100%; /* Cada elemento ocupa todo el ancho en pantallas pequeñas */
+  min-width: 100px;
+  position: relative; /* Permite posicionar el label sin afectar otros elementos */
+}
+
+/* Cambia el layout en pantallas medianas y grandes */
+@media (min-width: 768px) {
+  .panel-item{
+    flex: 1 1 calc(25% - 1rem); /* Cada elemento ocupa 1/4 del contenedor */
+  }
+}
+
+@media (min-width: 992px) {
+  .panel-item {
+    flex: 1 1 calc(12.5% - 1rem); /* Cada elemento ocupa 1/8 del contenedor */
+  }
+}
+
+
+/* Estilo global de los paneles */
+.panel-item label {
+  position: static;
+
+  width: 100%;
+  text-align: start;
+}
+
+
+.panel-item button,
+.panel-item select,
+.panel-item input {
+  width: 100%; /* Los botones, selects, e inputs ocupan todo el ancho del contenedor */
+}
+
+.panel-item button {
+  height: calc(100% - 1rem); /* Ajusta la altura del botón para alinearlo con los inputs/selects */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 1rem; /* Ajusta el padding del botón */
+}
+
+
+.input-filtros,
+.select-empleados {
+  padding: 1rem;
+  width: 100%;
+  background-color: transparent;
+  color: #656464;
+  border: 1px solid #c4c4c4;
+  border-radius: 4px;
+  transition: border-color 0.3s ease-in-out;
+}
+
+.input-filtros:focus,
+.select-empleados:focus {
+  border-color: #000;
+  outline: none;
+}
+
+
+.autocomplete-filtros {
+  padding: 1rem;
+  width: 100%; 
+  background-color: transparent;
+  color: #656464;
+  border-radius: 5px;
+  max-height: 49px;
+  font-size: 1rem;
+  outline: none;
+
+}
+
