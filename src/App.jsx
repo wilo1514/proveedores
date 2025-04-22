@@ -77,21 +77,14 @@ function App() {
   })();
 
   useEffect(() => {
-    // Verificar si la página ya fue recargada
-    const hasReloaded = localStorage.getItem('hasReloaded');
-
+    const hasReloaded = sessionStorage.getItem('hasReloaded');
+  
     if (!hasReloaded) {
-      // Marcar que la página ha sido recargada
-      localStorage.setItem('hasReloaded', 'true');
-      // Recargar la página
+      sessionStorage.setItem('hasReloaded', 'true');
       window.location.reload();
     }
-
-    // Limpiar la bandera al cerrar la pestaña
-    return () => {
-      localStorage.removeItem('hasReloaded');
-    };
   }, []);
+  
 
   return (
     <>

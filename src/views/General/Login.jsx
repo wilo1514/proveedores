@@ -3,9 +3,12 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
+
+
 import { updateAuth, updateRenovar } from "../../features/auth/authSlice";
 import DotSpinner from "../../components/DotSpinner";
 import fetchApi from "../../utils/fechtData";
+import Swal from 'sweetalert2';
 
 import '../../css/VistasGenerales/Login.css';
 import '../../css/VistasGenerales/General.css';
@@ -28,7 +31,6 @@ export default function Login() {
   const [contra, setContra] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const Swal = require('sweetalert2');
   const dispatch = useDispatch();
 
 /**

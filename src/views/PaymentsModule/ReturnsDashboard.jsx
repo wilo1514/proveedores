@@ -14,7 +14,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 
 import Container from "../../components/Container";
 import Modal from "../../components/Modal";
-import { ReactComponent as Icon } from "../../assets/iconos/eye.svg";
+import Icon  from "../../assets/iconos/eye.svg";
 import LogoFinal from "../../assets/images/conorque2.avif";
 
 import "../../css/DepartamentoCompras/Dashboard.css";

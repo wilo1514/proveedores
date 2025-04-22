@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Container from "../../../components/Container";
 import { Stack, TablePagination } from "@mui/material";
 import DotSpinner from "../../../components/DotSpinner";
-import { ReactComponent as Icon } from "../../../assets/iconos/eye.svg";
+import Icon  from "../../../assets/iconos/eye.svg";
 import Modal from "../../../components/Modal";
 import "../../../css/Proveedores/Pagos.css";
 import { validacion } from "../../../utils/apiUtils";

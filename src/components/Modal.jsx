@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Stack } from '@mui/material';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { ReactComponent as Icon } from '../assets/iconos/x.svg';
+import Icon from '../assets/iconos/x.svg';
 import '../css/ComponentesAdicionales/Modal.css';
 
 /**

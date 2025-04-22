@@ -6,18 +6,18 @@ import Tienda from "../assets/images/mega4.png";
 import LogoFinal from "../assets/images/mega.avif";
 
 // Importación de íconos SVG para cada opción del menú
-import { ReactComponent as IconHome } from "../assets/iconos/home.svg";
-import { ReactComponent as IconCompras } from "../assets/iconos/carritoCompra.svg";
-import { ReactComponent as IconCheckDocumento } from "../assets/iconos/checkDocumento.svg";
-import { ReactComponent as IconStartDocumento } from "../assets/iconos/startDocumento.svg";
-import { ReactComponent as IconMaletinCompras } from "../assets/iconos/notasCredito.svg";
-import { ReactComponent as IconEtiquetasCompras } from "../assets/iconos/etiquetaPrecio.svg";
-import { ReactComponent as IconDocumento } from "../assets/iconos/documento.svg";
-import { ReactComponent as IconUserSecurity } from "../assets/iconos/seguridadUsuario.svg";
-import { ReactComponent as IconContraseña } from "../assets/iconos/contraseña.svg";
-import { ReactComponent as IconFileAdd } from "../assets/iconos/carpetaAdd.svg";
-import { ReactComponent as IconStart } from "../assets/iconos/start.svg";
-import { ReactComponent as IconDevoluciones } from "../assets/iconos/carritoDevoluciones.svg";
+import IconHome from "../assets/iconos/home.svg";
+import IconCompras from "../assets/iconos/carritoCompra.svg";
+import IconCheckDocumento from "../assets/iconos/checkDocumento.svg";
+import IconStartDocumento from  "../assets/iconos/startDocumento.svg";
+import IconMaletinCompras from  "../assets/iconos/notasCredito.svg";
+import IconEtiquetasCompras from  "../assets/iconos/etiquetaPrecio.svg";
+import IconDocumento from  "../assets/iconos/documento.svg";
+import IconUserSecurity from  "../assets/iconos/seguridadUsuario.svg";
+import IconContraseña from  "../assets/iconos/contraseña.svg";
+import IconFileAdd from  "../assets/iconos/carpetaAdd.svg";
+import IconStart from  "../assets/iconos/start.svg";
+import IconDevoluciones from  "../assets/iconos/carritoDevoluciones.svg";
 
 import "../css/ComponentesAdicionales/Sidebar.css";
 
