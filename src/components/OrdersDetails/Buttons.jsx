@@ -1,5 +1,5 @@
 import React from "react";
-import { ReactComponent as Icon } from "../../assets/iconos/x.svg";
+import Icon from "../../assets/iconos/x.svg";
 import DotSpinner from "../DotSpinner";
 import "../../css/DepartamentoCompras/Autorizar.css";
 import "../../css/ComponentesAdicionales/Tabla.css";
@@ -15,7 +15,7 @@ export default function BotonesAccion({ showAlert, handleAlertOption, setShowAle
         {showAlert && (
           <div className="alert">
             <div className="icon-container">
-              <Icon onClick={() => handleAlertOption("cancelar")} />
+              <img src={Icon} onClick={() => handleAlertOption("cancelar")} />
             </div>
             <div className="alert-options">
               <div className="alert-header">

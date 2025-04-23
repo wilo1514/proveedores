@@ -72,7 +72,7 @@ const Modal = ({
           <div className="modal-header">
             <Stack direction="row" alignItems={"center"} justifyContent={"space-between"} marginBottom={2} spacing={2}>
               <h5 className="modal-title">{title}</h5>
-              <Icon onClick={onClose} /> {/* Ícono de cierre */}
+              <img src={Icon} alt="Cerrar" onClick={onClose} style={{ cursor: 'pointer' }} /> {/* Ícono de cierre */}
             </Stack>
           </div>
 

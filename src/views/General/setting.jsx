@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 import { validacion } from "../../utils/apiUtils";
 import fetchApi from "../../utils/fechtData";
+import Swal from 'sweetalert2';
+
 
 import '../../css/VistasGenerales/Settings.css';
 
@@ -11,7 +13,6 @@ import '../../css/VistasGenerales/Settings.css';
  * @returns {ReactElement} La vista de configuraciones.
  */
 export default function SettingsView() {
-  const Swal = require('sweetalert2');
   const [password, setPassword] = useState("");
   const [passwordA, setPasswordA] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");

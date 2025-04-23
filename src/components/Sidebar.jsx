@@ -145,7 +145,7 @@ const groupBy = (array, key) => {
  * @param {string} ruta - Ruta de la opción del menú.
  * @returns {JSX.Element|null} - Ícono correspondiente o null si no hay coincidencia.
  */
-const getIcon = (ruta) => {
+/*const getIcon = (ruta) => {
   if (!ruta) {
     return null;
   }
@@ -179,6 +179,38 @@ const getIcon = (ruta) => {
     default:
       return (<IconStart />);
   }
+};*/
+const getIcon = (ruta) => {
+  switch (ruta) {
+    case "/home":
+      return <img src={IconHome} alt="Home" height={24} />;
+    case "/ordencompra":
+      return <img src={IconCompras} alt="Compras" height={24} />;
+    case "/ordenes":
+    case "/mesatrabajo":
+      return <img src={IconCheckDocumento} alt="Check" height={24} />;
+    case "/enprogreso":
+      return <img src={IconStartDocumento} alt="En progreso" height={24} />;
+    case "/mesatrabajodevoluciones":
+    case "/pagosefectuados":
+      return <img src={IconMaletinCompras} alt="Pagos" height={24} />;
+    case "/devoluciones":
+      return <img src={IconDevoluciones} alt="Devoluciones" height={24} />;
+    case "/mesatrabajoprecio":
+    case "/actualizacionprecio":
+      return <img src={IconEtiquetasCompras} alt="Precios" height={24} />;
+    case "/actualizacioninformacion":
+      return <img src={IconDocumento} alt="Documento" height={24} />;
+    case "/actualizaciondatos":
+      return <img src={IconUserSecurity} alt="Usuario" height={24} />;
+    case "/configuracion":
+      return <img src={IconContraseña} alt="Config" height={24} />;
+    case "/nuevoproducto":
+      return <img src={IconFileAdd} alt="Nuevo Producto" height={24} />;
+    default:
+      return <img src={IconStart} alt="Inicio" height={24} />;
+  }
 };
+
 
 export default Sidebar;

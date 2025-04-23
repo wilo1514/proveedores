@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { validacion } from "../../../utils/apiUtils";
-import Swal from "sweetalert2";
+import Swal from 'sweetalert2';
 import * as XLSX from "xlsx";
 import Container from "../../../components/Container";
 import fetchApi from "../../../utils/fechtData";

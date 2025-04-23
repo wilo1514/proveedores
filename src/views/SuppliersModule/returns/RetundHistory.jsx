@@ -15,17 +15,19 @@ import Stack from "@mui/material/Stack";
 
 import { validacion } from "../../../utils/apiUtils";
 import fetchApi from "../../../utils/fechtData";
+import Swal from 'sweetalert2';
+
+
 import Container from "../../../components/Container";
 import Modal from "../../../components/Modal";
 import DotSpinner from "../../../components/DotSpinner";
 
-import { ReactComponent as Icon } from "../../../assets/iconos/eye.svg";
+import Icon from "../../../assets/iconos/eye.svg";
 import LogoFinal from "../../../assets/images/conorque2.avif";
 import "../../../css/ComponentesAdicionales/Tabla.css";
 import "../../../css/Proveedores/Ordenes.css";
 
 export default function NotasCreditoView() {
-  const Swal = require("sweetalert2");
   const CardCode = useSelector((state) => state.auth.datos_Usuario.CARDCODE);
   const navigate = useNavigate();
    // Estados de datos
@@ -521,7 +523,7 @@ export default function NotasCreditoView() {
                           direction={"row"}
                           justifyContent={"center"}
                         >
-                          <Icon
+                          <img src={Icon}
                             onClick={() => !isDisabled && abrirModalVisualizar(item)}
                             disabled={isDisabled}
                             style={{

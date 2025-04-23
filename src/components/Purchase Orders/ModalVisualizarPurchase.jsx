@@ -1,7 +1,7 @@
 import React from "react";
 import Modal from "../Modal";
 import { Grid, FormControl, FilledInput, InputAdornment, RadioGroup, FormControlLabel, Radio, Checkbox, TablePagination } from "@mui/material";
-import { ReactComponent as SearchIcon } from "../../assets/iconos/search.svg";
+import SearchIcon from "../../assets/iconos/search.svg";
 const ModalVisualizarPurchase = ({
     isOpen,
     onClose,
@@ -33,7 +33,7 @@ const ModalVisualizarPurchase = ({
               onChange={handleSearchProduct}
               endAdornment={
                 <InputAdornment position="end">
-                  <SearchIcon />
+                  <img src={SearchIcon} alt="buscar" />
                 </InputAdornment>
               }
               label="Buscar"

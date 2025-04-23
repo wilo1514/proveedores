@@ -1,7 +1,7 @@
 import React from "react";
 import CustomInput from "../../components/UnitInputField"
 import { Stack, Checkbox, Tooltip, TablePagination } from "@mui/material";
-import { ReactComponent as DeleteIcon } from "../../assets/iconos/trash.svg";
+import DeleteIcon from "../../assets/iconos/trash.svg";
 
 const TablaPurchase = ({
     items,
@@ -113,7 +113,7 @@ const TablaPurchase = ({
                     </td>
                     <td style={{ textAlign: "center" }}>
                       <Tooltip title="Eliminar">
-                        <DeleteIcon onClick={() => eliminarProducto(item.codigoPrincipal)} />
+                        <img src={DeleteIcon} alt="Cerrar" onClick={() => eliminarProducto(item.codigoPrincipal)} />
                       </Tooltip>
                     </td>
                   </tr>

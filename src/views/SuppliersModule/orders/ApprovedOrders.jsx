@@ -15,9 +15,11 @@ import Container from "../../../components/Container";
 import Modal from "../../../components/Modal";
 import DotSpinner from "../../../components/DotSpinner";
 import fetchApi from "../../../utils/fechtData";
+import Swal from 'sweetalert2';
+
 
 import LogoFinal from "../../../assets/images/conorque2.avif";
-import { ReactComponent as Icon } from "../../../assets/iconos/eye.svg";
+import Icon from "../../../assets/iconos/eye.svg";
 import "../../../css/ComponentesAdicionales/Tabla.css";
 import "../../../css/Proveedores/Ordenes.css";
 import "../../../css/EmpleadosMegas/Employees.css";
@@ -27,7 +29,6 @@ import "../../../css/EmpleadosMegas/Employees.css";
  * @returns {JSX.Element} Componente de órdenes de compra.
  */
 export default function OrdersView() {
-  const Swal = require("sweetalert2");
   const CardCode = useSelector((state) => state.auth.datos_Usuario.CARDCODE);
   const navigate = useNavigate();
     // Estados para almacenar información relevante de las órdenes
@@ -611,7 +612,7 @@ export default function OrdersView() {
                           direction={"row"}
                           justifyContent={"center"}
                         >
-                            <Icon
+                            <img src={Icon}
                               onClick={() => {
                                 abrirModalVisualizar(item);
                               }}

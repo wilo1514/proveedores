@@ -1,4 +1,6 @@
 import fetchApi from './fechtData';
+import Swal from 'sweetalert2';
+
 
 /**
  * Verifica si el token de autenticacion esta valido.
@@ -35,7 +37,7 @@ export async function validacion() {
  */
 async function  renovartoken () {
     const tokenId = localStorage.getItem("token");
-    const Swal = require('sweetalert2');
+    
     
     try {
       const datos = await fetchApi({

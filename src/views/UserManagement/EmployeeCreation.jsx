@@ -10,9 +10,11 @@ import Stack from '@mui/material/Stack';
 import { validacion } from "../../utils/apiUtils";
 import Container from "../../components/Container";
 import fetchApi from "../../utils/fechtData";
+import Swal from 'sweetalert2';
 
-import { ReactComponent as SearchIcon } from '../../assets/iconos/search.svg';
-import { ReactComponent as DeleteIcon } from '../../assets/iconos/trash.svg';
+
+import SearchIcon from '../../assets/iconos/search.svg';
+import DeleteIcon from '../../assets/iconos/trash.svg';
 import '../../css/VistasGenerales/Supplier.css';
 
 /**
@@ -29,7 +31,6 @@ import '../../css/VistasGenerales/Supplier.css';
  */
 export default function EmployeesView() {
   const navigate = useNavigate();
-  const Swal = require('sweetalert2');
   const [reset, setReset] = useState(false);
   const [codigo, setCodigo] = useState("");
   const [ruc, setRuc] = useState("");
@@ -232,8 +233,8 @@ registrado(datos.datos)
                   <Grid item xs={12} sm={12} md={12}>
                     <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
                       <TextField key={reset} onChange={handleRuc} className="inputregistro" inputProps={{ style: { textTransform: "uppercase" } }} required name='ruc' fullWidth label="Búsqueda CI Empleados" type="int" />
-                      <SearchIcon  onClick={() => { buscar() }}/>
-                      <DeleteIcon onClick={() => { limpiarCampos() }}/>
+                      <img src={SearchIcon}  onClick={() => { buscar() }}/>
+                      <img src={DeleteIcon} onClick={() => { limpiarCampos() }}/>
                     </Stack>
                   </Grid>
                   <Grid item xs={12} sm={12} md={12}>

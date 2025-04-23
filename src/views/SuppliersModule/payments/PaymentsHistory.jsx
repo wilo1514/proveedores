@@ -9,6 +9,8 @@ import Modal from "../../../components/Modal";
 import "../../../css/Proveedores/Pagos.css";
 import { validacion } from "../../../utils/apiUtils";
 import fetchApi from "../../../utils/fechtData";
+import Swal from 'sweetalert2';
+
 import LogoFinal from "../../../assets/images/conorque2.avif";
 
 /**
@@ -16,7 +18,6 @@ import LogoFinal from "../../../assets/images/conorque2.avif";
  * @component
  */
 export default function PagosView() {
-  const Swal = require("sweetalert2");
   const CardCode = useSelector((state) => state.auth.datos_Usuario.CARDCODE);
   const navigate = useNavigate();
 
@@ -482,7 +483,7 @@ export default function PagosView() {
                           justifyContent={"center"}
                           spacing={1}
                         >
-                          <Icon onClick={() => abrirModalVisualizar(item)} />
+                          <img src={Icon} onClick={() => abrirModalVisualizar(item)} />
                           <PdfDownloadButton item={item} />
                         </Stack>
 

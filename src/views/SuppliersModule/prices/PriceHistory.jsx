@@ -24,7 +24,7 @@ import Modal from "../../../components/Modal";
 import fetchApi from "../../../utils/fechtData";
 import LogoFinal from "../../../assets/images/conorque2.avif";
 
-import { ReactComponent as Icon } from "../../../assets/iconos/eye.svg";
+import Icon from "../../../assets/iconos/eye.svg";
 import "../../../css/Proveedores/UpdatePrice.css";
 
 export default function HistoricoPrecioView() {
@@ -558,7 +558,7 @@ export default function HistoricoPrecioView() {
                       <td className="start">{listado.nombreAsesor}</td>
                       <td className="start">{listado.motivoAnulacion}</td>
                       <td className="center">
-                        <Icon onClick={() => { abrirModalVisualizar(listado); }} />  
+                        <img src={Icon} onClick={() => { abrirModalVisualizar(listado); }} />  
                       </td>
                     </tr>
                   );

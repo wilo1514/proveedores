@@ -5,13 +5,14 @@ import { useTheme } from '@mui/material/styles';
 
 import { validacion } from "../../utils/apiUtils";
 import fetchApi from "../../utils/fechtData";
+import Swal from 'sweetalert2';
+
 
 import { Grid } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import TablePagination from "@mui/material/TablePagination";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-
 import Container from "../../components/Container";
 import Modal from "../../components/Modal";
 import Icon  from "../../assets/iconos/eye.svg";
@@ -24,7 +25,6 @@ import DotSpinner from "../../components/DotSpinner";
 
 export default function Employer() {
   const navigate = useNavigate();
-  const Swal = require("sweetalert2");
   const [data, setData] = useState([]);
   const [codigoo, setCodigoo] = useState(0);
   const [datosSucursal, setDatosSucursal] = useState([]);

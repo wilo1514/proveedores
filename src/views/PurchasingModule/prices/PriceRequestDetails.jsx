@@ -6,7 +6,7 @@ import { useTheme } from '@mui/material/styles';
 
 import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
-import Swal from "sweetalert2";
+import Swal from 'sweetalert2';
 import * as XLSX from "xlsx";
 
 import Container from "../../../components/Container";

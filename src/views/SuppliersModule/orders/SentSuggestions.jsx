@@ -11,8 +11,10 @@ import Container from "../../../components/Container";
 import Modal from "../../../components/Modal";
 import DotSpinner from "../../../components/DotSpinner";
 import fetchApi from "../../../utils/fechtData";
+import Swal from 'sweetalert2';
 
-import { ReactComponent as Icon } from "../../../assets/iconos/eye.svg";
+
+import Icon from "../../../assets/iconos/eye.svg";
 import LogoFinal from "../../../assets/images/conorque2.avif";
 import "../../../css/ComponentesAdicionales/Tabla.css";
 import "../../../css/Proveedores/Ordenes.css";
@@ -22,7 +24,6 @@ import "../../../css/Proveedores/Ordenes.css";
  * @component
  */
 export default function RecensionView() {
-  const Swal = require("sweetalert2");
   const CardCode = useSelector((state) => state.auth.datos_Usuario.CARDCODE);
   const navigate = useNavigate();
 
@@ -494,7 +495,7 @@ export default function RecensionView() {
                             justifyContent={"center"}
                             spacing={1}
                           >
-                            <Icon onClick={() => abrirModalVisualizar(item)} />
+                            <img src={Icon} onClick={() => abrirModalVisualizar(item)} />
                       
                           </Stack>
                         </td>

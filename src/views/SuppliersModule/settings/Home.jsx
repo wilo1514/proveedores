@@ -9,6 +9,8 @@ import Grid from "@mui/material/Grid";
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
+import Swal from 'sweetalert2';
+
 
 import DeliveryStatusCard from "../../../components/DeliveryStatusCard";
 import Container from "../../../components/Container";
@@ -22,6 +24,8 @@ import '../../../css/Proveedores/Home.css';
  */
 export default function HomeView() {
     // Hook para la navegación entre rutas
+    console.log("HomeView se montó");
+
     const navigate = useNavigate();
     
     // Hook para acceder al tema de Material UI
@@ -31,10 +35,11 @@ export default function HomeView() {
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     
     // Alerta de SweetAlert2
-    const Swal = require('sweetalert2');
+
     
     // Obtiene el código de usuario desde el estado global
     const CardCode = useSelector((state) => state.auth.datos_Usuario.CARDCODE);
+    console.log("CardCode:", CardCode);
     
     // Estados para almacenar los contadores de órdenes
     const [enviadas, setEnviadas] = useState(0);
@@ -47,6 +52,8 @@ export default function HomeView() {
      */
     const obtenerDatos = async () => {
         const validado = await validacion();
+        console.log("Validando token...");
+        console.log("Respuesta validacion():", validado);
         if (validado === 1) {
             try {
                 const tokenId = localStorage.getItem("token");
@@ -74,11 +81,19 @@ export default function HomeView() {
                             }
                             return respuesta.datos;
                         })
+                        
                     )
+                    
                 );
-    
+
+
+                
+
                 // Destructura y asigna los valores de las respuestas
                 const [enviadas, pendientes, canceladas] = respuestas;
+                console.log("Ordenes entregadas:", enviadas);
+                console.log("Ordenes pendientes:", pendientes);
+                console.log("Ordenes canceladas:", canceladas);
                 if (enviadas !== null) setEnviadas(enviadas);
                 if (pendientes !== null) setPendientes(pendientes);
                 if (canceladas !== null) setCanceladas(canceladas);

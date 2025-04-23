@@ -176,11 +176,8 @@ export default function OrderSupplier() {
       if (result.isConfirmed) {
         cargarExcel();
       } else if (result.isDenied) {
-        fetch('/plantilla.xlsx', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-          }
+        descargarPlantilla();
+      }
         })
           .then(response => {
             if (response.ok && response.headers.get('Content-Type').includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
@@ -1004,6 +1001,16 @@ export default function OrderSupplier() {
     link.click();
     document.body.removeChild(link);
   };
+
+  const descargarPlantilla = () => {
+    const link = document.createElement('a');
+    link.href = '/plantilla.xlsx';
+    link.download = 'plantilla.xlsx';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  
 
   window.acuerdoProveedores = acuerdoProveedores;
 

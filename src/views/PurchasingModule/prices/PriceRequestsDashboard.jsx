@@ -4,6 +4,8 @@ import { useSelector } from "react-redux";
 
 import { validacion } from "../../../utils/apiUtils";
 import fetchApi from "../../../utils/fechtData";
+import Swal from 'sweetalert2';
+
 
 import Tooltip from "@mui/material/Tooltip";
 import Stack from "@mui/material/Stack";
@@ -33,7 +35,6 @@ import "../../../css/ComponentesAdicionales/Tabla.css";
 export default function Employer() {
   const navigate = useNavigate();
   const SlpCode = useSelector((state) => state.auth.datos_Usuario?.SLPCODE ?? "");
-  const Swal = require("sweetalert2");
   const [data, setData] = useState([]);
   const [codigoo, setCodigoo] = useState(0);
   const [datosSucursal, setDatosSucursal] = useState([]);
