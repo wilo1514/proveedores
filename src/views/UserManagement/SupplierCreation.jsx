@@ -10,8 +10,7 @@ import Stack from '@mui/material/Stack';
 import { validacion } from "../../utils/apiUtils";
 import Container from "../../components/Container";
 import fetchApi from "../../utils/fechtData";
-import Swal from 'sweetalert2';
-
+import Swal from 'sweetalert2'
 
 import SearchIcon from '../../assets/iconos/search.svg';
 import DeleteIcon from '../../assets/iconos/trash.svg';
@@ -269,7 +268,7 @@ export default function SuppliersView() {
               <Grid item xs={12} sm={12} md={12}>
                 <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
                   <TextField key={reset} onChange={handleRuc} className="inputregistro" inputProps={{ style: { textTransform: "uppercase" } }} required name='ruc' fullWidth label="Búsqueda RUC Proveedor" type="int" />
-                  <img scr={SearchIcon} onClick={() => { buscar() }} />
+                  <img src={SearchIcon} onClick={() => { buscar() }} />
                   <img src={DeleteIcon} onClick={() => { limpiarCampos() }} />
                 </Stack>
               </Grid>

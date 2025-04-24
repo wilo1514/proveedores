@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { validacion } from "../../../utils/apiUtils";
+
 import Swal from 'sweetalert2';
 import * as XLSX from "xlsx";
 import Container from "../../../components/Container";
 import fetchApi from "../../../utils/fechtData";
+import { descargarArchivo } from '../../../utils/descargarPlantilla';
+import { readDuplicadoExcel, validateAndTransformDuplicado, showDuplicadoAlerts } from '../../../utils/excelDuplicadoProcessor';
 import "../../../css/DepartamentoCompras/Autorizar.css";
 import "../../../css/ComponentesAdicionales/Tabla.css";
 import "../../../css/EmpleadosMegas/Employees.css";
@@ -315,22 +318,26 @@ export default function DuplicadoView() {
    * @param {object} data - Contiene los datos de la orden de compra.
    * @return {undefined}
    */
+  function getUnidadXCaja(item) {
+    const key = Object.keys(item)
+      .find(k => k.toLowerCase() === "unidadxcaja");
+    return key ? item[key] : 1;
+  }
   const ObtenerInformacion = (data) => {
-    if (data.details && data.details.length !== 0) {
-      sessionStorage.setItem("codeSup", data.codigoProveedor);
-
-      const valor = data.details.map((item) => ({
-        ...item,
-        filtrado: false,
-        ocultarColumna: data.estado === "PRE",
-        precioBase: item.precioBase === 0 ? item.precioUnitario : item.precioBase,
-      }));
-      setItems(valor);
-      setDatosPedidos(data);
-      actualizarTotales(data.details);
-    } else {
-      console.log("No hay detalles en los datos proporcionados.");
-    }
+    if (!data.details?.length) return;
+    sessionStorage.setItem("codeSup", data.codigoProveedor);
+  
+    const valor = data.details.map(item => ({
+      ...item,
+      filtrado: false,
+      ocultarColumna: data.estado === "PRE",
+      precioBase: item.precioBase || item.precioUnitario,
+      unidadXCaja: getUnidadXCaja(item)
+    }));
+  
+    setItems(valor);
+    setDatosPedidos(data);
+    actualizarTotales(data.details);
   };
 
   const toggleModalComentario = () => setModalComentario((prev) => !prev);
@@ -411,6 +418,80 @@ export default function DuplicadoView() {
     setSelectedOption((prev) => ({ ...prev, [field]: value }));
   };
 
+  /*funcion para cargar documentos excel*/ 
+  const popUpExcel = () => {
+    Swal.fire({
+      icon: "info",
+      title: "NUEVO FORMATO",
+      text: "Descargue la plantilla y cargue su Excel de sugeridos",
+      confirmButtonText: "Cargar Excel",
+      denyButtonText: "Descargar Plantilla",
+      cancelButtonText: "Ver Tutorial",
+      showDenyButton: true,
+      showCancelButton: true,
+      iconColor: '#06ac2e',
+      customClass: {
+        confirmButton: 'swal2-confirm-btn',
+        denyButton: 'swal2-cancel-btn',
+        cancelButton: 'swal2-cancel-btn'
+      }
+    }).then(result => {
+      if (result.isConfirmed) {
+        cargarExcel();
+      } else if (result.isDenied) {
+        descargarArchivo("sugeridos.xlsx");
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        window.open("https://youtu.be/7KOlYe5qkNI", "_blank");
+      }
+    });
+  };
+
+  // 2. Dispara el diálogo de archivo
+  const cargarExcel = () => document.getElementById("fileInputDuplicado").click();
+  // 3. Procesa el archivo y vuelca los items:
+
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    readDuplicadoExcel(file, (rows) => {
+      try {
+        const { nuevosItems: rawNuevos, alertas } = validateAndTransformDuplicado(rows);
+  
+setItems(prevItems => {
+  const existing = new Set(prevItems.map(i => i.codigoPrincipal));
+  const itemsAInsertar = rawNuevos
+    .filter(r => !existing.has(r.codigoPrincipal))
+    .map(raw => {
+      const fuente = prevItems.find(i => i.codigoPrincipal === raw.codigoPrincipal)
+                  || productos.find(p => p.codigoPrincipal === raw.codigoPrincipal);
+      if (!fuente) return null;
+      return {
+        ...fuente,
+        unidadXCaja: getUnidadXCaja(fuente),
+        precioUnitario:     raw.precioUnitario,
+        cantidadAutorizada: raw.cantidadAutorizada,
+        descuento:          raw.descuento,
+        comentario:         raw.comentario,
+        esPromocion:        raw.esPromocion
+      };
+    })
+    .filter(Boolean);
+
+  const merged = [...prevItems, ...itemsAInsertar];
+  actualizarTotales(merged);
+  return merged;
+});
+  
+        showDuplicadoAlerts(alertas);
+      } catch (err) {
+        Swal.fire("Error de formato", err.message, "error");
+      }
+    }, (err) => {
+      Swal.fire("Error al leer el archivo", err.message || "Archivo no válido", "error");
+    });
+  };
+  
+  
   /**
    * Filtra los productos seg n las opciones seleccionadas.
    * 
@@ -547,8 +628,12 @@ export default function DuplicadoView() {
    * @param {Object[]} datosProductos - Los productos obtenidos de la API.
    */
   const productList = (datosProductos) => {
-    setProductos(datosProductos);
-    setProductosFiltrados(datosProductos);
+    const catalogo = datosProductos.map(p => ({
+      ...p,
+      unidadXCaja: getUnidadXCaja(p)
+    }));
+    setProductos(catalogo);
+    setProductosFiltrados(catalogo);
     setIsButtonDisabled(false);
   };
 
@@ -735,6 +820,8 @@ export default function DuplicadoView() {
               Authorization: "Bearer " + tokenId,
             },
           });
+
+
           if (response.error) {
             const errorLines = response.error.split("<br>");
             const formattedErrors = errorLines.map((line) => {
@@ -748,7 +835,40 @@ export default function DuplicadoView() {
             });
             const formattedMessage = formattedErrors.join("<br>");
             Swal.fire({ icon: "error", title: "ERROR", html: formattedMessage, showConfirmButton: true }); return;
-          }
+          }/*
+            if (response.error?.includes("orden de compra ya existe")) {
+              setLoading(false);
+              Swal.fire({
+                title: "Pedido ya autorizado",
+                text: "La orden ya estaba creada y ya quedó autorizada.",
+                icon: "success",
+                showConfirmButton: false,
+                timer: 1500
+              });
+              cancelarRegresar();  // tu navegación hacia atrás
+              return;
+            }
+            
+            // 2) Si hay otro error, lo mostramos normalmente
+            if (response.error) {
+              Swal.fire({
+                title: "Error",
+                text: response.error,
+                icon: "error"
+              });
+              setLoading(false);
+              return;
+            }
+            
+            // 3) Si no hay error, sigue tu flujo habitual
+            setLoading(false);
+            Swal.fire({
+              title: "Pedido Autorizado",
+              icon: "success",
+              showConfirmButton: false,
+              timer: 1500
+            });
+            cancelarRegresar();*/
           if (isNaN(response.datos)) {
             Swal.fire({ icon: "error", title: "ERROR", text: datos, showConfirmButton: true });
             setLoading(false);
@@ -1181,10 +1301,25 @@ export default function DuplicadoView() {
 
   return (
     <>
+      {/* input escondido */}
+      <input
+        type="file"
+        id="fileInputDuplicado"
+        accept=".xlsx,.xls"
+        style={{ display: 'none' }}
+        onChange={handleFileChange}
+      />
       <Container className="inicio_pedido" fluid>
         <div className="panel">
           <div className="panel-title">
-            <HeaderOrden titulo={`ORDEN COMPRA N°${datosPedidos.id}`} onRegresar={regresar} onAbrirFiltros={abrirModalFiltros} onAgregarProducto={abrirModalVisualizar} onDescargarExcel={descargarExcel} />
+            <HeaderOrden titulo={`ORDEN COMPRA N°${datosPedidos.id}`} 
+            onRegresar={regresar} 
+            onAbrirFiltros={abrirModalFiltros} 
+            onAgregarProducto={abrirModalVisualizar} 
+            onDescargarExcel={descargarExcel} 
+            onCargarExcel={popUpExcel}
+            onDescargarPlantilla={() => descargarArchivo("sugeridos.xlsx")}
+            />
           </div>
           <DetallePedido datosPedidos={datosPedidos} />
         </div>

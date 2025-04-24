@@ -3,12 +3,12 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import * as XLSX from "xlsx";
 import Swal from "sweetalert2";
 import Stack from "@mui/material/Stack";
-import TablePagination from "@mui/material/TablePagination";
 import { validacion } from "../../../utils/apiUtils";
 import fetchApi from "../../../utils/fechtData";
+import { descargarArchivo } from "../../../utils/descargarPlantilla"; 
+import { readExcelFile, validateAndTransform, showAlertsIfNeeded } from '../../../utils/excelProcessor';
 import Container from "../../../components/Container";
 import "../../../css/ComponentesAdicionales/Tabla.css";
 import "../../../css/Proveedores/OrderSupplier.css";
@@ -176,8 +176,12 @@ export default function OrderSupplier() {
       if (result.isConfirmed) {
         cargarExcel();
       } else if (result.isDenied) {
-        descargarPlantilla();
-      }
+        descargarArchivo("plantilla.xlsx")
+        /*fetch('/plantilla.xlsx', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          }
         })
           .then(response => {
             if (response.ok && response.headers.get('Content-Type').includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
@@ -198,7 +202,7 @@ export default function OrderSupplier() {
           })
           .catch(error => {
             Swal.fire('Error', error.message, 'error');
-          });
+          });*/
 
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         window.open("https://youtu.be/7KOlYe5qkNI", "_blank");
@@ -211,198 +215,30 @@ export default function OrderSupplier() {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = (event) => processFile(event.target.result);
-    reader.readAsArrayBuffer(file);
-  };
-
-  const processFile = (data) => {
-    const workbook = XLSX.read(new Uint8Array(data), { type: "array" });
-    const json = extractJsonFromWorkbook(workbook);
-    console.log("Datos extraídos del Excel:", json);
-    compararExcel(json);
-    setArchivoSubido(true);
-  };
-
-  const extractJsonFromWorkbook = (workbook) => {
-    const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
-    return XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-  };
-
-  const compararExcel = (json) => {
-    const requiredColumns = ["codigoPrincipal", "descripcion", "cantidad", "precio", "descuento", "comentario"];
-    const jsonColumns = json[0] || [];
-    const missingColumns = getMissingColumns(jsonColumns, requiredColumns);
-
-    if (missingColumns.length) {
-      showError(`Las siguientes columnas están faltando: ${missingColumns.join(", ")}`);
-      return;
-    }
-
-    const { nuevosProductos, alertas, duplicateAlerts } = processRows(json, jsonColumns);
-    updateItems(nuevosProductos);
-    showAlertsIfNeeded(alertas, duplicateAlerts);
-  };
-
-  const getMissingColumns = (jsonColumns, requiredColumns) => {
-    return requiredColumns.filter((col) => !jsonColumns.includes(col));
-  };
-
-  const showError = (message) => {
-    Swal.fire({
-      icon: "error",
-      title: "Error de formato",
-      text: message,
-    });
-  };
-
-  const processRows = (json, jsonColumns) => {
-    const productCodeSet = new Set();
-    const alertas = [];
-    const duplicateAlerts = [];
-
-    // Filtrar las filas que tienen cantidad mayor a 0 y no están vacías
-    const nuevosProductos = json.slice(1)
-      .filter((filaExcel) => {
-        const cantidad = parseFloat(getCellValue(filaExcel, jsonColumns, "cantidad"));
-        return cantidad > 0 && filaExcel.some(cell => cell !== null && cell !== "");  // Verifica que la fila no esté vacía
-      })
-      .map((filaExcel, index) => {
-        console.log("Procesando fila:", filaExcel);
-        const codigo = getCellValue(filaExcel, jsonColumns, "codigoPrincipal");
-        if (!codigo || isDuplicate(codigo, productCodeSet, duplicateAlerts, index, filaExcel, jsonColumns)) return null;
-
-        const productoEnRedux = findProductoEnRedux(codigo);
-        if (!productoEnRedux) {
-          alertas.push(createNotFoundAlert(filaExcel, jsonColumns, index));
-          return null;
+    readExcelFile(
+      file,
+      (json) => {
+        try {
+          const { nuevosProductos, alertas, duplicateAlerts } = validateAndTransform(json, productos);
+          const nuevosItems = [
+            ...items.filter(({ codigoPrincipal }) =>
+              !nuevosProductos.some((producto) => producto.codigoPrincipal === codigoPrincipal)
+            ),
+            ...nuevosProductos,
+          ];
+          setItems(nuevosItems);
+          setProductosSeleccionados(nuevosProductos);
+          actualizarTotales(nuevosItems);
+          showAlertsIfNeeded(alertas, duplicateAlerts);
+          setArchivoSubido(true);
+        } catch (error) {
+          Swal.fire('Error de formato', error.message, 'error');
         }
-
-        const transformedProduct = transformProduct(filaExcel, jsonColumns, productoEnRedux, alertas, index);
-        return transformedProduct;
-      })
-      .filter(Boolean);  // Elimina las filas que sean null (productos no válidos)
-
-    return { nuevosProductos, alertas, duplicateAlerts };
-  };
-
-
-  const getCellValue = (filaExcel, jsonColumns, column) => {
-    return filaExcel[jsonColumns.indexOf(column)]?.toString() || "";
-  };
-
-  const isDuplicate = (codigo, productCodeSet, duplicateAlerts, index, filaExcel, jsonColumns) => {
-    if (productCodeSet.has(codigo)) {
-      duplicateAlerts.push({
-        index: index + 2,
-        descripcion: filaExcel[jsonColumns.indexOf("descripcion")]
-      });
-      return true;
-    }
-    productCodeSet.add(codigo);
-    return false;
-  };
-
-  const findProductoEnRedux = (codigo) => {
-    return productos.find(({ codigoPrincipal }) => codigoPrincipal === codigo);
-  };
-
-  const createNotFoundAlert = (filaExcel, jsonColumns, index) => ({
-    descripcion: getCellValue(filaExcel, jsonColumns, "descripcion"),
-    campo: "codigoPrincipal",
-    cantidadExcel: "Producto no encontrado",
-    cantidadTransformada: "Producto no encontrado",
-    fila: index + 2,
-  });
-
-  const transformProduct = (filaExcel, jsonColumns, productoEnRedux, alertas, index) => {
-    const cantidad = transformCantidad(filaExcel, jsonColumns, productoEnRedux, alertas, index);
-    const precio = transformField(filaExcel, jsonColumns, "precio", productoEnRedux, alertas, index, "Precio");
-
-    // Si el descuento está vacío o no es un número válido, se asigna 0
-    const descuento = transformDescuento(filaExcel, jsonColumns, alertas, index);
-
-    // Si el comentario es cero se cambia a vacio sino queda igual
-    const comentario = transformComentario(filaExcel, jsonColumns, alertas, index);
-
-    return {
-      ...productoEnRedux,
-      cantidad: cantidad.toString(),
-      precioUnitario: precio.toString(),
-      descuento: descuento.toString(),
-      comentario: comentario || "",  // Asegurar que no sea undefined
-      esPromocion: descuento > 0 || comentario !== "",  // Se considera promoción si hay descuento o comentario
-    };
-  };
-
-  // Nueva función para transformar el campo descuento
-  const transformDescuento = (filaExcel, jsonColumns, alertas, index) => {
-    const descuento = getCellValue(filaExcel, jsonColumns, "descuento");
-
-    // Si el descuento está vacío o no es un número válido, lo asignamos a 0
-    if (!descuento || /[^0-9.]/.test(descuento)) {
-      return 0;
-    }
-
-    return parseFloat(descuento);
-  };
-
-  const transformComentario = (filaExcel, jsonColumns, alertas, index) => {
-    let comentario = getCellValue(filaExcel, jsonColumns, "comentario");
-    if (comentario === "0" || comentario === 0) {
-      comentario = "";  // Asignar cadena vacía si el comentario es 0
-    }
-    return comentario;
-  }
-
-  const transformCantidad = (filaExcel, jsonColumns, productoEnRedux, alertas, index) => {
-    const cantidadOriginal = parseFloat(getCellValue(filaExcel, jsonColumns, "cantidad")) || 0;
-
-    if (cantidadOriginal > 20000) {
-      alertas.push(createAlert(productoEnRedux, cantidadOriginal, 0, index, "Cantidad"));
-      return 0;
-    }
-
-    const cantidadTransformada = productoEnRedux.unidad === "UN"
-      ? Math.trunc(cantidadOriginal)
-      : cantidadOriginal;
-
-    if (cantidadTransformada !== cantidadOriginal) {
-      alertas.push(createAlert(productoEnRedux, cantidadOriginal, cantidadTransformada, index, "Cantidad"));
-    }
-
-    return cantidadTransformada;
-  };
-
-  const transformField = (filaExcel, jsonColumns, field, productoEnRedux, alertas, index, campo) => {
-    const originalValue = getCellValue(filaExcel, jsonColumns, field);
-    if (/[^0-9.]/.test(originalValue)) {
-      alertas.push(createAlert(productoEnRedux, originalValue, 0, index, campo));
-      return 0;
-    }
-    return parseFloat(originalValue);
-  };
-
-  const createAlert = (producto, original, transformed, index, campo) => ({
-    descripcion: producto.descripcion,
-    cantidadExcel: original,
-    cantidadTransformada: transformed,
-    fila: index + 2,
-    campo,
-  });
-
-  const updateItems = (nuevosProductos) => {
-    const nuevosItems = [
-      ...items.filter(({ codigoPrincipal }) =>
-        !nuevosProductos.some((producto) => producto.codigoPrincipal === codigoPrincipal)
-      ),
-      ...nuevosProductos,
-    ];
-
-    setItems(nuevosItems);
-    setProductosSeleccionados(nuevosProductos);
-    actualizarTotales(nuevosItems);
+      },
+      (error) => {
+        Swal.fire('Error al leer el archivo', error.message || 'Archivo no válido', 'error');
+      }
+    );
   };
 
   const showAlertsIfNeeded = (alertas, duplicateAlerts) => {
@@ -423,51 +259,7 @@ export default function OrderSupplier() {
     }
   };
 
-  const generateAlertTableHtml = (alertas, duplicateAlerts) => {
-    const alertRows = alertas.map(alert => createAlertRow(alert)).join("");
-    const duplicateRows = duplicateAlerts.map(alert => createDuplicateRow(alert)).join("");
-    return `
-    <div class="alert-container">
-      <table class="alert-table">
-        <thead>
-          <tr>
-            <th>Descripción</th>
-            <th>Campo</th>
-            <th>Ingresado</th>
-            <th>Modificado</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${alertRows}
-          ${duplicateRows}
-        </tbody>
-      </table>
-    </div>
-  `;
-  };
 
-  const createAlertRow = (alerta) => `
-  <tr>
-    <td>${alerta.descripcion}</td>
-    <td>${alerta.campo}</td>
-    <td>${alerta.cantidadExcel}</td>
-    <td>${alerta.cantidadTransformada}</td>
-  </tr>
-`;
-
-  const createDuplicateRow = (alerta) => `
-  <tr>
-     <td>${alerta.descripcion}</td>
-    <td>Producto duplicado eliminado</td>
-    <td colspan="3"></td>
-  </tr>
-`;
-
-  //PETICIONES
-
-   /**
-   * Obtiene la lista de sucursales disponibles desde la API.
-   */
   const getSucursales = async () => {
     const validado = await validacion();
     if (validado === 1) {
@@ -997,15 +789,6 @@ export default function OrderSupplier() {
     const link = document.createElement("a");
     link.href = pdfUrl;
     link.download = "AcuerdoProveedores.pdf";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const descargarPlantilla = () => {
-    const link = document.createElement('a');
-    link.href = '/plantilla.xlsx';
-    link.download = 'plantilla.xlsx';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
