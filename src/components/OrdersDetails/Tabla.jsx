@@ -3,7 +3,6 @@ import { Stack, Tooltip } from "@mui/material";
 import CustomInput from "../UnitInputField";
 import { DollarSign, BarChart, Trash2 } from "lucide-react";
 
-
 const TablaProductos = ({
   items,
   selectedRows,
@@ -41,6 +40,7 @@ const TablaProductos = ({
           const currentIndex = i + 1;
           const isSelected = selectedRows.includes(currentIndex);
           const promocion = item.esPromocion ? "SÍ" : "NO";
+          const hasNota = Boolean(item.comentario && item.comentario.trim());
           return (
             <tr key={i} className={isSelected ? "selected-row" : ""}>
               <td style={{ textAlign: "center" }}>{currentIndex}</td>
@@ -86,13 +86,28 @@ const TablaProductos = ({
               <td>
                 <Stack direction="row" alignItems="center" justifyContent="end" spacing={2}>
                   <button
-                    className="remark"
+                    className={`remark ${hasNota ? 'enabled' : 'disabled'}`}
                     style={{ backgroundColor: "transparent" }}
                     onClick={() => abrirComentario(item.comentario)}
-                    disabled={!item.comentario || item.comentario.trim() === ""}
+                    disabled={!hasNota}
                   >
                     Nota
                   </button>
+                  <Tooltip>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className={`svg-check ${isSelected ? "selected" : ""
+                        }`}
+                      viewBox="0 0 24 24"
+                      onClick={() => handleRowSelect(currentIndex)}
+                    >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="m4.5 12.75 6 6 9-13.5"
+                      />
+                    </svg>
+                  </Tooltip>
                   <Tooltip title="Análisis Ventas">
                     <BarChart
                       size={20}

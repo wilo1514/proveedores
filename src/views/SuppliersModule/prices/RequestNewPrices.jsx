@@ -23,8 +23,8 @@ import Container from "../../../components/Container";
 import Modal from "../../../components/Modal";
 import CustomDecimalInput from "../../../components/NumericDecimalInput";
 
-import { ReactComponent as DeleteIcon } from "../../../assets/iconos/trash.svg";
-import { ReactComponent as SearchIcon } from "../../../assets/iconos/search.svg";
+import DeleteIcon from "../../../assets/iconos/trash.svg";
+import SearchIcon from "../../../assets/iconos/search.svg";
 import "../../../css/ComponentesAdicionales/Tabla.css";
 import "../../../css/Proveedores/OrderSupplier.css";
 
@@ -1042,7 +1042,7 @@ export default function UpdatePriceView() {
                           />
                         </td>
                         <td style={{ textAlign: "center" }}>
-                          <DeleteIcon
+                          <img src={DeleteIcon} alt="borrar"
                             onClick={() => eliminarProducto(item.codigoPrincipal)}
                           />
                         </td>
@@ -1092,7 +1092,7 @@ export default function UpdatePriceView() {
                 onChange={handleSearchProduct}
                 endAdornment={
                   <InputAdornment position="end">
-                    <SearchIcon />
+                    <img src={SearchIcon} alt="buscar"/>
                   </InputAdornment>
                 }
                 label="Buscar"

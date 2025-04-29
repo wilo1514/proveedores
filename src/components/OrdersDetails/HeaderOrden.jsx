@@ -1,7 +1,7 @@
 import React from "react";
 import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
-import { ArrowLeft, Filter, ShoppingCart, Download, Upload } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Download, Upload, ListFilter } from "lucide-react";
 
 export default function HeaderOrden({ titulo, onRegresar, onAbrirFiltros, onAgregarProducto, onDescargarExcel, onCargarExcel, onDescargarPlantilla }) {
   return (
@@ -20,7 +20,7 @@ export default function HeaderOrden({ titulo, onRegresar, onAbrirFiltros, onAgre
           </Tooltip>
 
           <Tooltip title="Filtros">
-            <Filter size={20} onClick={onAbrirFiltros} style={{ cursor: "pointer" }} />
+            <ListFilter size={20} onClick={onAbrirFiltros} style={{ cursor: "pointer" }} />
           </Tooltip>
 
           <Tooltip title="Agregar Producto">

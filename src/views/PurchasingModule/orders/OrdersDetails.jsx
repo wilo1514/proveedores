@@ -1301,7 +1301,6 @@ setItems(prevItems => {
 
   return (
     <>
-      {/* input escondido */}
       <input
         type="file"
         id="fileInputDuplicado"

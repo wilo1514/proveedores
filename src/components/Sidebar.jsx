@@ -145,41 +145,7 @@ const groupBy = (array, key) => {
  * @param {string} ruta - Ruta de la opción del menú.
  * @returns {JSX.Element|null} - Ícono correspondiente o null si no hay coincidencia.
  */
-/*const getIcon = (ruta) => {
-  if (!ruta) {
-    return null;
-  }
 
-  switch (ruta) {
-    case "/home":
-      return (<IconHome />);
-    case "/ordencompra":
-      return (<IconCompras />);
-    case "/ordenes":
-    case "/mesatrabajo":
-      return (<IconCheckDocumento />);
-    case "/enprogreso":
-      return (<IconStartDocumento />);
-    case "/mesatrabajodevoluciones":
-    case "/pagosefectuados":
-      return (<IconMaletinCompras />);
-    case "/devoluciones":
-      return (<IconDevoluciones />);
-    case "/mesatrabajoprecio":
-    case "/actualizacionprecio":
-      return (<IconEtiquetasCompras />);
-    case "/actualizacioninformacion":
-      return (<IconDocumento />);
-    case "/actualizaciondatos":
-      return (<IconUserSecurity />);
-    case "/configuracion":
-      return (<IconContraseña />);
-    case "/nuevoproducto":
-      return (<IconFileAdd />);
-    default:
-      return (<IconStart />);
-  }
-};*/
 const getIcon = (ruta) => {
   switch (ruta) {
     case "/home":

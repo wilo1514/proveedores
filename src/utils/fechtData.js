@@ -1,7 +1,7 @@
 import Swal from 'sweetalert2';
 
-//const baseUrl = 'https://190.57.143.126:52100';
-const baseUrl = 'http://192.168.10.212:8085';
+const baseUrl = 'https://190.57.143.126:52100';
+//const baseUrl = 'http://192.168.10.212:8085';
 
 /**
  * Realiza una solicitud HTTP a un endpoint específico utilizando fetch.

@@ -13,7 +13,7 @@ import Container from "../../../components/Container";
 import DotSpinner from "../../../components/DotSpinner";
 import fetchApi from "../../../utils/fechtData";
 
-import { ReactComponent as Icon } from "../../../assets/iconos/x.svg";
+import Icon from "../../../assets/iconos/x.svg";
 import "../../../css/DepartamentoCompras/Autorizar.css";
 import "../../../css/ComponentesAdicionales/Tabla.css";
 import "../../../css/DepartamentoCompras/Dashboard.css";
@@ -1041,7 +1041,7 @@ export default function AutorizarPrecios() {
                   {showAlert && (
                     <div className="alert">
                       <div className="icon-container">
-                        <Icon onClick={() => handleAlertOption("cancelar")} />
+                        <img src={Icon} alt="cancelar" onClick={() => handleAlertOption("cancelar")} />
                       </div>
                       <div className="alert-options">
                         <div className="alert-header">
@@ -1195,7 +1195,11 @@ export default function AutorizarPrecios() {
                       <td style={{ textAlign: "end" }}>${item.precioUnitario}</td>
                       <td style={{ textAlign: "end" }}>
                         <input
-                          value={"$" + item.precioSugerido ?? ""}
+                          value={
+                                 item.precioSugerido != null
+                                   ? `$${item.precioSugerido}`
+                                   : ""
+                               }
                           style={{ width: '70px', padding: '3px', borderRadius: '4px', color: '#212529', background: '#f0eeee', border: 'none', textAlign: 'center' }}
                           readOnly />
                       </td>
