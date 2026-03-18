@@ -493,7 +493,7 @@ export default function NotasCreditoView() {
               <tbody>
                 {data.map((item, i) => {
                   const currentIndex = i + 1 + page * rowsPerPage;
-                  const isDisabled = item.motive === "DIFERENCIA DE PRECIOS EN FACTURA";
+                  const isDisabled = item.motive?.toUpperCase().includes("DIFERENCIA DE PRECIOS EN FACTURA");
                   return (
                     <tr key={currentIndex}>
                       <td className="center">{currentIndex}</td>

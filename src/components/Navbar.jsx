@@ -1,40 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 
 import { Stack } from '@mui/material';
 import Notificaciones from "../components/Notificaciones";
 
+import { clearAuth } from "../features/auth/authSlice";
 import Avatar from '../assets/images/avatar2.webp';
 import '../css/ComponentesAdicionales/Navbar.css';
 
 /**
- * Componente de barra de navegación (Navbar) que muestra el nombre del usuario,
- * notificaciones y un menú de opciones.
- *
- * @param {Object} props 
- * @param {Function} props.onGroupAndRouteChange - Función para actualizar el grupo y la ruta actual en el layout.
- * 
- * @returns {JSX.Element} - Navbar con nombre del usuario, notificaciones y opciones de menú.
+ * Navbar con nombre del usuario, notificaciones y menú de usuario.
+ * @param {{ onGroupAndRouteChange?: (grupo: string, ruta: string) => void }} props
  */
 const Navbar = ({ onGroupAndRouteChange }) => {
-  const [mostrar, setMostrar] = useState(false); // Estado para mostrar/ocultar menú
-  const permissions = useSelector((state) => state.auth.permissions); // Permisos del usuario desde Redux
+  const [mostrar, setMostrar] = useState(false);
+  const permissions = useSelector((state) => state.auth.permissions);
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
 
-  // Obtención de valores desde Redux para mostrar información del usuario
+  // Datos de usuario desde Redux
   const cardName = useSelector((state) => state.auth.datos_Usuario?.CARDNAME);
-  const slpName = useSelector((state) => state.auth.datos_Usuario?.SLPNAME);
-  const rol = useSelector((state) => state.auth.datos_Usuario?.ROL);
+  const slpName  = useSelector((state) => state.auth.datos_Usuario?.SLPNAME);
+  const rol      = useSelector((state) => state.auth.datos_Usuario?.ROL);        // <-- faltaba
+  const CardCode = useSelector((state) => state.auth.datos_Usuario?.CARDCODE);
 
-  // Variables para mostrar el nombre correcto y la sección de notificaciones
+  // Nombre e ítems de notificaciones según rol
   let displayName = 'Usuario Inválido';
   let notificaciones = null;
 
   if (rol === 'supplier') {
     displayName = cardName || 'Usuario Inválido';
-    // notificaciones = <NotificacionesProveedor />; // (Deshabilitado en este código)
   } else if (rol === 'employees') {
     displayName = slpName || 'Usuario Inválido';
     notificaciones = <Notificaciones />;
@@ -42,56 +39,62 @@ const Navbar = ({ onGroupAndRouteChange }) => {
     displayName = slpName || 'Usuario Inválido';
   }
 
-  /**
-   * Alterna la visibilidad del menú de usuario.
-   */
-  const toggleMenu = () => {
-    setMostrar(!mostrar);
-  };
+  const toggleMenu = () => setMostrar((v) => !v);
 
   /**
-   * Maneja el cierre de sesión del usuario.
-   * - Redirige a la página de inicio de sesión.
-   * - Elimina el token de autenticación y la expiración del almacenamiento local.
+   * Cerrar sesión:
+   * - Borra flag del popup por usuario (para que se muestre de nuevo en próximo login)
+   * - Limpia token/expiración
+   * - Resetea Redux (clearAuth)
+   * - Navega al login
    */
   const modalAvatar1 = () => {
-    navigate("/");
+    // 1) Borrar flag del popup (Opción A - SweetAlert2)
+    if (CardCode) {
+      sessionStorage.removeItem(`homePopupShown:${CardCode}`);
+    } else {
+      // Limpieza defensiva si aún no hay CardCode
+      Object.keys(sessionStorage)
+        .filter((k) => k.startsWith('homePopupShown:'))
+        .forEach((k) => sessionStorage.removeItem(k));
+    }
+
+    // 2) Limpiar storage de auth
     localStorage.removeItem("token");
     localStorage.removeItem("expiracion");
+
+    // 3) Limpiar estado global
+    dispatch(clearAuth());
+
+    // 4) Cerrar menú y navegar
     setMostrar(false);
+    navigate("/");
   };
 
-  /**
-   * Efecto que actualiza el grupo y nombre de la ruta actual
-   * basado en los permisos y la ubicación actual.
-   */
+  // Breadcrumb dinámico según permisos y ruta actual
   useEffect(() => {
     const currentPath = location.pathname;
     const currentPerm = permissions.find(perm => perm.ruta === currentPath);
     const currentGroup = currentPerm ? currentPerm.grupo : 'Desconocido';
-    const currentName = currentPerm ? currentPerm.nombre : 'Desconocido';
+    const currentName  = currentPerm ? currentPerm.nombre : 'Desconocido';
 
-    if (onGroupAndRouteChange) {
-      onGroupAndRouteChange(currentGroup, currentName);
-    }
+    onGroupAndRouteChange?.(currentGroup, currentName);
   }, [location, permissions, onGroupAndRouteChange]);
 
   return (
     <div>
-      {/* Navbar principal */}
       <nav className="navbar">
         <div className="navbar-links desktop">
           <Stack direction="row" alignItems={"center"} justifyContent={"space-between"} spacing={3}>
-            <p>{displayName}</p> {/* Nombre del usuario */}
+            <p>{displayName}</p>
             <div style={{ marginTop: '4px' }}>
-              {notificaciones} {/* Sección de notificaciones si aplica */}
+              {notificaciones}
             </div>
-            {/* Avatar del usuario */}
             <div className="navbar-avatar" onClick={toggleMenu}>
               <img src={Avatar} alt="Logo" />
             </div>
           </Stack>
-          {/* Menú desplegable del avatar */}
+
           {mostrar && (
             <div className="navbar-dropdown">
               <div className="navbar-dropdown-item" onClick={modalAvatar1}>Salir</div>
@@ -99,13 +102,11 @@ const Navbar = ({ onGroupAndRouteChange }) => {
           )}
         </div>
 
-        {/* Menú hamburguesa para dispositivos móviles */}
         <div className="navbar-menu mobile" onClick={toggleMenu}>
           &#9776;
         </div>
       </nav>
 
-      {/* Menú de navegación en dispositivos móviles */}
       {mostrar && (
         <div className="navbar-mobile-menu">
           {permissions

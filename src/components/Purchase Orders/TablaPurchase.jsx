@@ -2,6 +2,7 @@ import React from "react";
 import CustomInput from "../../components/UnitInputField"
 import { Stack, Checkbox, Tooltip, TablePagination } from "@mui/material";
 import DeleteIcon from "../../assets/iconos/trash.svg";
+import {BarChart } from "lucide-react";
 
 const TablaPurchase = ({
     items,
@@ -13,6 +14,7 @@ const TablaPurchase = ({
     abrirComentarios,
     handleDescuentoChange,
     eliminarProducto,
+    analisisVentas,
     handleChangePageProduct,
   }) => {
     return (
@@ -114,6 +116,14 @@ const TablaPurchase = ({
                     <td style={{ textAlign: "center" }}>
                       <Tooltip title="Eliminar">
                         <img src={DeleteIcon} alt="Cerrar" onClick={() => eliminarProducto(item.codigoPrincipal)} />
+                      </Tooltip>
+                      <Tooltip title="Inventario">
+                          <BarChart
+                              size={20}
+                              color="#151635"
+                              onClick={() => analisisVentas(item)} // Llamada a la función
+                              style={{ cursor: "pointer", marginLeft: "10px" }}
+                          />
                       </Tooltip>
                     </td>
                   </tr>

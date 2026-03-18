@@ -39,7 +39,7 @@ const CustomInput = ({ value, onChange, unit, disabled }) => {
                 input = '0'; // Si el input está vacío, establece "0"
             }
 
-            if (parseInt(input, 10) > 20000) {
+            if (parseInt(input, 10) > 35000) {
                 input = '0'; // Límite máximo de 20,000 unidades
             }
 

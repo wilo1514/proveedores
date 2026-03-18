@@ -15,6 +15,7 @@ import "../../../css/Proveedores/OrderSupplier.css";
 import ModalComentarios from "../../../components/Purchase Orders/ModalComentarios";
 import ModalVisualizarPurchase from "../../../components/Purchase Orders/ModalVisualizarPurchase";
 import TablaPurchase from "../../../components/Purchase Orders/TablaPurchase";
+import ModalStock from "../../../components/Purchase Orders/ModalStock";
 /**
  * Componente que gestiona las órdenes de compra del proveedor.
  * Permite cargar productos manualmente o desde un archivo Excel,
@@ -64,6 +65,10 @@ export default function OrderSupplier() {
   const [busquedaTexto, setBusquedaTexto] = useState("");
   const [busqueda, setBusqueda] = useState(false);
   const [tipoOrden, setTipoOrden] = useState(false)
+  const [modalAnalisis, setModalAnalisis] = useState(false);
+  const [datosStockAlmacenes, setDatosStockAlmacenes] = useState([]);
+  const [nombreProductoAnalisis, setNombreProductoAnalisis] = useState("");
+  const [analizarStockStatus, setAnalizarStockStatus] = useState("NO");
 
   const tiposOrden = [
     { label: "NORMAL", value: false },
@@ -122,8 +127,8 @@ export default function OrderSupplier() {
   };
 
   const abrirComentarios = (_datos) => {
-    const nombre = _datos.toUpperCase();
-    setProductoNombre(nombre);
+
+    setProductoNombre(_datos);
     setModalComentarios(true);
   };
 
@@ -131,12 +136,19 @@ export default function OrderSupplier() {
     setComentario(e.target.value);
   };
 
+  
+
   const agregarComentario = () => {
     setModalComentarios(false);
     // Si el comentario es "0" o 0, establecerlo como cadena vacía
     const comentarioFinal = comentario === "0" || comentario === 0 ? "" : comentario;
-    const updatedItems = items.map((it) =>
+    /*const updatedItems = items.map((it) =>
       it.descripcion === productoNombre ? { ...it, comentario: comentarioFinal } : it
+    );*/
+    const updatedItems = items.map((it) =>
+    it.descripcion.trim().toUpperCase() === productoNombre.trim().toUpperCase()
+      ? { ...it, comentario: comentarioFinal }
+      : it
     );
     setItems(updatedItems);
     setComentario("");
@@ -177,32 +189,6 @@ export default function OrderSupplier() {
         cargarExcel();
       } else if (result.isDenied) {
         descargarArchivo("plantilla.xlsx")
-        /*fetch('/plantilla.xlsx', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-          }
-        })
-          .then(response => {
-            if (response.ok && response.headers.get('Content-Type').includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
-              return response.blob();
-            } else {
-              throw new Error('Tipo de contenido incorrecto o archivo no disponible.');
-            }
-          })
-          .then(blob => {
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'plantilla.xlsx';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
-          })
-          .catch(error => {
-            Swal.fire('Error', error.message, 'error');
-          });*/
 
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         window.open("https://youtu.be/7KOlYe5qkNI", "_blank");
@@ -213,22 +199,90 @@ export default function OrderSupplier() {
 
   const cargarExcel = () => document.getElementById("fileInput").click();
 
+
+//////////////// analisis de ventas //////////////
+
+  const analisisVentas = async (item) => {
+  const validado = await validacion();
+  if (validado === 1) {
+    const data = item.codigoConorque;
+    setNombreProductoAnalisis(item.descripcion);
+    
+    const tokenId = localStorage.getItem("token");
+    const codeSup = sessionStorage.getItem("codeSup");
+    const proveedor = (CardCode).slice(2); 
+    try {
+    const resStock = await fetchApi({
+      endPoint: `/warehouse/stockwarehouse/${codeSup}?itemCode=${data}&whsCode=${sucursal.whsCode}`,
+      method: "GET",
+      headers: { Authorization: `Bearer ${tokenId}` },
+      paginacion: false,
+    });
+
+      const resProv = await fetchApi({
+        endPoint: `/supplier/${proveedor}`,
+        method: "GET",
+        headers: { Authorization: `Bearer ${tokenId}` },
+        paginacion: false,
+      });
+
+      if (!resStock.error) {
+        const bodegasExcluidas = ["05", "06", "12", "17"];
+        
+        const stockFiltrado = resStock.datos
+          .filter((bodega) => !bodegasExcluidas.includes(bodega.whsCode))
+          .map((bodega) => {
+            // Convertimos a número para asegurar la comparación
+            const stockActual = parseFloat(bodega.onHand) || 0;
+            
+            return {
+              ...bodega,
+              // Si es menor a 0, ponemos "0", de lo contrario dejamos el valor original
+              onHand: stockActual < 0 ? "0" : bodega.onHand 
+            };
+          });
+        
+        setDatosStockAlmacenes(stockFiltrado);
+      }
+      if (!resProv.error) setAnalizarStockStatus(resProv.datos.checkStock);
+
+      setModalAnalisis(true);
+    } catch (error) {
+      console.error("Error en análisis:", error);
+    }
+  } else {
+    handleError();
+  }
+};
+
+/////////////////////////////////////
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     readExcelFile(
       file,
       (json) => {
         try {
-          const { nuevosProductos, alertas, duplicateAlerts } = validateAndTransform(json, productos);
+          const { nuevosProductos, alertas, duplicateAlerts } =
+            validateAndTransform(json, productos);
+  
+          // ——>>> NUEVA LÓGICA DE PROMOCIÓN <<<——
+          const productosConPromo = nuevosProductos.map(p => ({
+            ...p,
+            esPromocion: parseFloat(p.descuento) > 0
+          }));
+   
           const nuevosItems = [
             ...items.filter(({ codigoPrincipal }) =>
-              !nuevosProductos.some((producto) => producto.codigoPrincipal === codigoPrincipal)
+              !productosConPromo.some(prod => prod.codigoPrincipal === codigoPrincipal)
             ),
-            ...nuevosProductos,
+            ...productosConPromo
           ];
+  
           setItems(nuevosItems);
-          setProductosSeleccionados(nuevosProductos);
+          setProductosSeleccionados(productosConPromo);
           actualizarTotales(nuevosItems);
+          console.log(">>> alertas:", alertas, ">>> duplicateAlerts:", duplicateAlerts);
           showAlertsIfNeeded(alertas, duplicateAlerts);
           setArchivoSubido(true);
         } catch (error) {
@@ -239,24 +293,6 @@ export default function OrderSupplier() {
         Swal.fire('Error al leer el archivo', error.message || 'Archivo no válido', 'error');
       }
     );
-  };
-
-  const showAlertsIfNeeded = (alertas, duplicateAlerts) => {
-    if (alertas.length || duplicateAlerts.length) {
-      const alertTableHtml = generateAlertTableHtml(alertas, duplicateAlerts);
-      Swal.fire({
-        title: "AVISO",
-        html: `
-            <strong>Se muestran las cantidades cambiadas, codigos inexistentes y elementos duplicados</strong><br>
-            ${alertTableHtml}
-        `,
-        icon: "warning",
-        iconColor: '#e31616',
-        footer: "NOTA: Las cantidades fueron modificadas si no correspondían con la unidad o superaban los 20000 productos, los productos duplicados eliminados y los códigos de barras inexistentes eliminados.",
-        width: "60%",
-        confirmButtonColor: '#7c7c7e',
-      });
-    }
   };
 
 
@@ -556,9 +592,10 @@ export default function OrderSupplier() {
         item.descuento = 0.0000;
       }
       const advertencias = [];
-      const parseDescuento = parseFloat(item.descuento);
+      const parseDescuento = parseFloat(item.descuento)
+      const comentarioStr = String(item.comentario || "");
 
-      if (item.esPromocion && (!item.comentario || item.comentario.trim() === "") && (parseDescuento < 0.09)) {
+      if (item.esPromocion && (!comentarioStr || comentarioStr.trim() === "") && (parseDescuento < 0.09)) {
         advertencias.push("Promoción activada pero sin datos");
       }
 
@@ -607,7 +644,7 @@ export default function OrderSupplier() {
     esPromocion: item.esPromocion,
     unidadxCaja: item.unidadxCaja,
     valor: parseFloat(precioTotalProducto),
-    comentario: item.comentario || "",
+    comentario: String(item.comentario || "").trim(),
   });
 
   const mostrarAlertas = async (alertas) => {
@@ -967,7 +1004,7 @@ export default function OrderSupplier() {
 
         <div className="panel">
           <div className="Scroll">
-            <TablaPurchase items={items} page={page} rowsPerPageProduct={rowsPerPageProduct} handleCantidadChange={handleCantidadChange} handlePrecioChange={handlePrecioChange} handlePromocion={handlePromocion} abrirComentarios={abrirComentarios} handleDescuentoChange={handleDescuentoChange} eliminarProducto={eliminarProducto} handleChangePageProduct={handleChangePageProduct}/>
+            <TablaPurchase items={items} page={page} rowsPerPageProduct={rowsPerPageProduct} handleCantidadChange={handleCantidadChange} handlePrecioChange={handlePrecioChange} handlePromocion={handlePromocion} abrirComentarios={abrirComentarios} handleDescuentoChange={handleDescuentoChange} eliminarProducto={eliminarProducto} analisisVentas={analisisVentas} handleChangePageProduct={handleChangePageProduct}/>
           </div>
         </div>
 
@@ -1000,6 +1037,7 @@ export default function OrderSupplier() {
           </div>
         </div>
       </Container>
+<ModalStock isOpen={modalAnalisis} onClose={() => setModalAnalisis(false)} title={nombreProductoAnalisis}stockData={datosStockAlmacenes}analizarStock={analizarStockStatus} />
 <ModalComentarios isOpen={modalComentarios} onClose={cerrarModalComentarios} productoNombre={productoNombre}  comentario={comentario} handleComentario={handleComentario} agregarComentario={agregarComentario} />
 <ModalVisualizarPurchase isOpen={modalVisualizar} onClose={cerrarProductos} busquedaTexto={busquedaTexto} handleSearchProduct={handleSearchProduct} busqueda={busqueda} handleBusqueda={handleBusqueda} productos={productos} productosFiltrados={productosFiltrados} productosSeleccionados={productosSeleccionados} handleSelectAll={handleSelectAll} handleCheckboxChange={handleCheckboxChange} pageP={pageP} rowsPerPageProduct={rowsPerPageProduct} handleChangePageModal={handleChangePageModal} agregarProductos={agregarProductos} />   
     </>

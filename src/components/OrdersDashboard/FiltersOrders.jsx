@@ -52,6 +52,7 @@ const FiltrosPedidos = ({
           ))}
         </select>
       </div>
+
       <div className="panel-item">
         <label className="input-label">Estado:</label>
         <select className="select-empleados" value={estado} onChange={handleStatus}>
@@ -63,6 +64,7 @@ const FiltrosPedidos = ({
           ))}
         </select>
       </div>
+      
       <div className="panel-item">
         <label className="input-label">N° Orden:</label>
         <input type="text" className="input-filtros" placeholder="Código del Pedido" onChange={handleCodigo} maxLength={10} />

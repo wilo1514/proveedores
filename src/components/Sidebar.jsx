@@ -8,6 +8,7 @@ import LogoFinal from "../assets/images/mega.avif";
 // Importación de íconos SVG para cada opción del menú
 import IconHome from "../assets/iconos/home.svg";
 import IconCompras from "../assets/iconos/carritoCompra.svg";
+import IconEstadoCuenta from "../assets/iconos/estadoCuenta.svg";
 import IconCheckDocumento from "../assets/iconos/checkDocumento.svg";
 import IconStartDocumento from  "../assets/iconos/startDocumento.svg";
 import IconMaletinCompras from  "../assets/iconos/notasCredito.svg";
@@ -157,9 +158,16 @@ const getIcon = (ruta) => {
       return <img src={IconCheckDocumento} alt="Check" height={24} />;
     case "/enprogreso":
       return <img src={IconStartDocumento} alt="En progreso" height={24} />;
+    case "/estadocuenta":
+      return <img src={IconEstadoCuenta} alt="Estado cuenta" height={24} />;
     case "/mesatrabajodevoluciones":
+      return <img src={IconDevoluciones} alt="Devoluciones" height={24} />;
+    case "/estadocuentapagos":
+      return <img src={IconEstadoCuenta} alt="Estado cuenta" height={24} />;
     case "/pagosefectuados":
       return <img src={IconMaletinCompras} alt="Pagos" height={24} />;
+    case "/sugeridosmegas":
+      return <img src={IconMaletinCompras} alt="Productos sugeridos" height={24} />;
     case "/devoluciones":
       return <img src={IconDevoluciones} alt="Devoluciones" height={24} />;
     case "/mesatrabajoprecio":

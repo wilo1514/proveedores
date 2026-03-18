@@ -639,7 +639,7 @@ export default function UpdatePriceView() {
           if (respuesta.error) {
             Swal.fire({
               icon: "error",
-              title: "Error al enviar el pedido",
+              title: "Error al enviar actualizacion",
               text: respuesta.error,
             });
           } else if (respuesta.datos.errors) {

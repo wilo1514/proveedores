@@ -277,7 +277,7 @@ export default function PagosView() {
   /**
    * Filtra pagos según los parámetros seleccionados.
    */
-  const filtrarReportes = async () => {
+ /* const filtrarReportes = async () => {
     const validado = await validacion();
     if (validado === 1) {
       const tokenId = localStorage.getItem("token");
@@ -310,13 +310,59 @@ export default function PagosView() {
     }
   };
 
-  const pasoFiltrar = (info) => {
-    if (data.length !== 0) {
-      return setData(info);
-    } else {
-      handleOrdenes();
+  // const pasoFiltrar = (info) => {
+  //   if (data.length !== 0) {
+  //     return setData(info);
+  //   } else {
+  //     handleOrdenes();
+  //   }
+  // };*/
+
+  const filtrarReportes = async () => {
+  const validado = await validacion();
+  if (validado === 1) {
+    setLoading(true);
+    const tokenId = localStorage.getItem("token");
+    const datos = await fetchApi({
+      endPoint: `/outgoingpayment?pagina=1&recordsPorPagina=10&dateFrom=${inicio}&dateTo=${fin}&cardCode=${CardCode}&docNum=${codigo}`,
+      method: 'GET',
+      paginacion: true,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + tokenId,
+      }
+    });
+
+    if (datos.error) {
+      setLoading(false);
+      setReset(!reset);
+      setCodigo(0);
+      handleErrorSis(datos.error);
+      return;
     }
-  };
+
+    const pagos = datos.datos || [];
+
+    setCantItems(datos.totalRegistros || 0);
+    setPage(0);
+    setLoading(false);
+
+    if (pagos.length === 0) {
+      handleOrdenes();
+      reinicirarDatos();
+    } else {
+      pasoFiltrar(pagos);
+    }
+
+  } else {
+    setLoading(false);
+    handleError();
+  }
+};
+
+  const pasoFiltrar = (info) => {
+  setData(info);
+};
 
    /**
    * Reinicia los filtros y vuelve a cargar la información.

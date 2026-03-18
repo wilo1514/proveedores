@@ -80,7 +80,7 @@ const ModalAnalisis = ({
                      <Grid item xs={12} sm={12} md={12}>
                        {" "}
                        <p className="titulos">
-                         PROMEDIO DE VENTAS MENSUALES 2024-2025
+                         PROMEDIO DE VENTAS MENSUALES 2025-2026
                        </p>{" "}
                      </Grid>
                      <Grid item xs={12} md={6}>
@@ -94,7 +94,7 @@ const ModalAnalisis = ({
                            marginBottom: "20px",
                          }}
                        >
-                         2024
+                         2025
                        </p>
                        <table className="table table-ligh table-hover">
                          <thead>
@@ -132,7 +132,7 @@ const ModalAnalisis = ({
                            marginBottom: "20px",
                          }}
                        >
-                         2025
+                         2026
                        </p>
                        <table className="table table-ligh table-hover">
                          <thead>

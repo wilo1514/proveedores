@@ -263,7 +263,7 @@ export default function HistoricoPrecioView() {
       "Descripción":item.descripcion,
       "Precio Anterior":item.precioUnitario,
       "Precio Solicitado":item.precioSugerido,
-      "Estado":item.estado,
+      "Estado": item.aprobacion ? "APROBADO" : "CERRADO",
     }));
     exportToExcelSolicitud (filterDataS);
   }
@@ -649,14 +649,18 @@ export default function HistoricoPrecioView() {
                 <tbody>
                   {detalles.map((item, i) => {
                     const currentIndex = i + 1;
-                    const rowStyle = item.estado !== "APROBADO" ? { color: '#151635', opacity: '0.5', cursor: 'not-allowed' } : { color: 'green' };
+                    const rowStyle = !item.aprobacion 
+                          ? { color: '#151635', opacity: '0.5', cursor: 'not-allowed' } 
+                          : { color: 'green' };
                     return (
                       <tr key={currentIndex} style={rowStyle}>
                         <td className="start">{currentIndex}</td>
                         <td style={{ textAlign: "start" }}>{item.codigoPrincipal}</td>
                         <td style={{ textAlign: "start" }}>{item.descripcion}</td>
                         <td style={{ textAlign: "end" }}>$ {item.precioSugerido}</td>
-                        <td style={{ textAlign: "end" }}>{item.estado}</td>
+                        <td style={{ textAlign: "end" }}>
+                          {item.aprobacion ? "APROBADO" : "CERRADO"}
+                        </td>
                       </tr>
                     );
                   })}

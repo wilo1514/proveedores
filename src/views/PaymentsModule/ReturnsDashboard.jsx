@@ -636,33 +636,6 @@ export default function Employer() {
         spacing={2}>
 
         <p className="panel-title">MESA TRABAJO - DEVOLUCIONES</p>
-        <button onClick={descargarExcel} className="boton-orden">
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-evenly",
-                      alignItems: "center",
-                      spacing: "5px",
-                    }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      height="1.2rem"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="size-6"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
-                      />
-                    </svg>
-                    <span style={{ marginLeft: "8px" }}>EXCEL</span>
-                  </div>
-                </button>
                 
                 </Stack>
   
@@ -797,10 +770,15 @@ export default function Employer() {
                     <td style={{ textAlign: "start" }}>{item.motive}</td>
                     <td style={{ textAlign: "center" }}>
                       <Stack spacing={2} direction={"row"} justifyContent={"center"}>
-                        <Icon onClick={() => abrirModalVisualizar(item)} />
-                        <PdfDownloadButton 
-                        item={item}/>
-                      </Stack>
+                        <img
+                          src={Icon}
+                          alt="Ver detalles"
+                          width={20}
+                          height={20}
+                          style={{ cursor: "pointer" }}
+                          onClick={() => abrirModalVisualizar(item)}
+                          />
+                         </Stack>
                     </td>
                   </tr>
                 );

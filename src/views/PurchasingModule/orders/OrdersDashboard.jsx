@@ -29,6 +29,7 @@ export default function Employer() {
   const [data, setData] = useState([]);
   const [codigoo, setCodigoo] = useState(0);
   const [datosSucursal, setDatosSucursal] = useState([]);
+  //const [sucursal, setSucursal] = useState({ whsCode: "", whsName: "" });
   const [sucursal, setSucursal] = useState("");
   const [datosProveedores, setDatosProveedores] = useState([]);
   const [proveedor, setProveedor] = useState("");
@@ -315,12 +316,15 @@ export default function Employer() {
    * Maneja el cambio de sucursal en el select.
    * @param {React.ChangeEvent<HTMLSelectElement>} event - Evento de cambio del select.
    */
-  const handleSucursal = (event) => {
+  /*const handleSucursal = (event) => {
     const nombreSucursal = event.target.value;
     const sucursalSeleccionada = datosSucursal.find(
       (suc) => suc.whsName === nombreSucursal
     );
     setSucursal(sucursalSeleccionada ? sucursalSeleccionada.whsCode : "");
+  };*/
+  const handleSucursal = (event) => {
+    setSucursal(event.target.value);
   };
 
 /**

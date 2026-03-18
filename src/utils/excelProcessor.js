@@ -21,70 +21,124 @@ export const readExcelFile = (file, onSuccess, onError) => {
 
 export const validateAndTransform = (json, productos) => {
   const requiredColumns = ["codigoPrincipal", "descripcion", "cantidad", "precio", "descuento", "comentario"];
-  const jsonColumns = json[0] || [];
-  const missingColumns = requiredColumns.filter(col => !jsonColumns.includes(col));
-  if (missingColumns.length) {
-    throw new Error(`Las siguientes columnas están faltando: ${missingColumns.join(', ')}`);
+  const headers = json[0] || [];
+  const missing = requiredColumns.filter(c => !headers.includes(c));
+  if (missing.length) {
+    throw new Error(`Faltan columnas: ${missing.join(', ')}`);
   }
 
+  // índices de cada columna
+  const idx = {};
+  requiredColumns.forEach(c => { idx[c] = headers.indexOf(c); });
+
   const productCodeSet = new Set();
-  const alertas = [];
+  const alertas        = [];
   const duplicateAlerts = [];
 
-  const nuevosProductos = json.slice(1)
-    .filter(fila => parseFloat(fila[jsonColumns.indexOf("cantidad")]) > 0 && fila.some(cell => cell !== null && cell !== ""))
-    .map((fila, index) => {
-      const codigo = fila[jsonColumns.indexOf("codigoPrincipal")]?.toString();
-      if (!codigo) return null;
+  const nuevosProductos = json
+    .slice(1)
+    // filtrar filas vacías o con cantidad <= 0
+    .filter(fila =>
+      parseFloat(fila[idx.cantidad]) > 0 &&
+      fila.some(cell => cell !== null && cell !== "")
+    )
+    .map((fila, i) => {
+      const rowNum = i + 2; // para referencias en errores
+      const codigoExcel     = fila[idx.codigoPrincipal]?.toString().trim();
+      const descripcionExcel = fila[idx.descripcion]?.toString().trim();
 
-      if (productCodeSet.has(codigo)) {
+      if (!codigoExcel) {
+        // si incluso falta el código, lo consideramos fila inválida
+        alertas.push({
+          codigoPrincipal: "(sin código)",
+          descripcionExcel,
+          mensaje: `Fila ${rowNum}: no existe códigoPrincipal`,
+          fila: rowNum
+        });
+        return null;
+      }
+
+      // duplicados
+      if (productCodeSet.has(codigoExcel)) {
         duplicateAlerts.push({
-          index: index + 2,
-          descripcion: fila[jsonColumns.indexOf("descripcion")]
+          codigoPrincipal: codigoExcel,
+          descripcionExcel,
+          fila: rowNum
         });
         return null;
       }
-      productCodeSet.add(codigo);
+      productCodeSet.add(codigoExcel);
 
-      const productoEnRedux = productos.find(p => p.codigoPrincipal === codigo);
-      if (!productoEnRedux) {
+      // buscar en tu catálogo (redux)
+      const prodRedux = productos.find(p => p.codigoPrincipal === codigoExcel);
+      if (!prodRedux) {
         alertas.push({
-          descripcion: fila[jsonColumns.indexOf("descripcion")],
-          campo: "codigoPrincipal",
-          cantidadExcel: "No encontrado",
-          cantidadTransformada: "No encontrado",
-          fila: index + 2
+          codigoPrincipal: codigoExcel,
+          descripcionExcel,
+          mensaje: `Producto no encontrado en la base`,
+          fila: rowNum
         });
         return null;
       }
 
-      const cantidadOriginal = parseFloat(fila[jsonColumns.indexOf("cantidad")]) || 0;
-      let cantidadTransformada = cantidadOriginal;
-      if (productoEnRedux.unidad === "UN") {
-        cantidadTransformada = Math.trunc(cantidadOriginal);
-      }
-      if (cantidadTransformada > 20000 || cantidadTransformada !== cantidadOriginal) {
+      /*// cantidad
+      const rawCant = parseFloat(fila[idx.cantidad]) || 0;
+      let transCant = rawCant;
+      if (prodRedux.unidad === "UN") transCant = Math.trunc(rawCant);
+      if (transCant !== rawCant || transCant > 20000) {
         alertas.push({
-          descripcion: productoEnRedux.descripcion,
-          campo: "Cantidad",
-          cantidadExcel: cantidadOriginal,
-          cantidadTransformada,
-          fila: index + 2
+          codigoPrincipal: codigoExcel,
+          descripcionExcel,
+          mensaje: `Cantidad modificada: ${rawCant} → ${transCant}`,
+          fila: rowNum
+        });
+      }*/
+        const rawCant0 = parseFloat(fila[idx.cantidad]) || 0;
+
+        // 1) redondeo “seguro” a 6 decimales
+        const rawCant = Math.round(rawCant0 * 1e6) / 1e6;
+        
+        // 2) calculo la versión “truncada” si es unidad
+        let transCant = rawCant;
+        if (prodRedux.unidad === "UN") {
+          transCant = Math.trunc(rawCant);
+        }
+        
+        // 3) sólo aviso si la diferencia es mayor a un epsilon muy pequeño
+        const EPS = 1e-6;
+        if (Math.abs(rawCant - transCant) > EPS || transCant > 35000) {
+          alertas.push({
+            codigoPrincipal: codigoExcel,
+            descripcionExcel,
+            mensaje: `Cantidad modificada: ${rawCant} → ${transCant}`,
+            fila: rowNum
+          });
+        }
+
+      // precio
+      const rawPrecio = parseFloat(fila[idx.precio]) || 0;
+      const basePrecio = parseFloat(prodRedux.precioUnitario) || 0;
+      if (rawPrecio > basePrecio + 0.001) {
+        alertas.push({
+          codigoPrincipal: codigoExcel,
+          descripcionExcel,
+          mensaje: `El precio ingresado ${rawPrecio} es mayor precio base ${basePrecio}`,
+          fila: rowNum
         });
       }
 
-      const precio = parseFloat(fila[jsonColumns.indexOf("precio")]) || 0;
-      const descuento = parseFloat(fila[jsonColumns.indexOf("descuento")]) || 0;
-      let comentario = fila[jsonColumns.indexOf("comentario")];
-      comentario = comentario === "0" || comentario === 0 ? "" : comentario;
+      // descuento/comentario
+      const descuento = parseFloat(fila[idx.descuento]) || 0;
+      let comentario  = fila[idx.comentario];
+      comentario = (comentario === "0" || comentario === 0) ? "" : comentario;
 
       return {
-        ...productoEnRedux,
-        cantidad: cantidadTransformada.toString(),
-        precioUnitario: precio.toString(),
-        descuento: descuento.toString(),
-        comentario: comentario || "",
-        esPromocion: descuento > 0 || comentario !== ""
+        ...prodRedux,
+        cantidad:        transCant.toString(),
+        precioUnitario:  rawPrecio.toString(),
+        descuento:       descuento.toString(),
+        comentario:      String(comentario || "").trim(),
+        esPromocion:     descuento > 0 || comentario !== ""
       };
     })
     .filter(Boolean);
@@ -93,45 +147,54 @@ export const validateAndTransform = (json, productos) => {
 };
 
 export const showAlertsIfNeeded = (alertas, duplicateAlerts) => {
-  if (alertas.length || duplicateAlerts.length) {
-    const alertTableHtml = `
+  if (!alertas.length && !duplicateAlerts.length) return;
+
+  // construyo todas las filas de la tabla
+  const rows = [
+    // primero las alertas de validación
+    ...alertas.map(a => `
+      <tr>
+        <td>${a.codigoPrincipal}</td>
+        <td>${a.descripcionExcel}</td>
+        <td>${a.mensaje}</td>
+      </tr>
+    `),
+    // luego los duplicados
+    ...duplicateAlerts.map(d => `
+      <tr>
+        <td>${d.codigoPrincipal}</td>
+        <td>${d.descripcionExcel}</td>
+        <td>Duplicado</td>
+      </tr>
+    `)
+  ].join("");
+
+  const alertTableHtml = `
     <div class="alert-container">
       <table class="alert-table">
         <thead>
           <tr>
+            <th>Código</th>
             <th>Descripción</th>
-            <th>Campo</th>
-            <th>Ingresado</th>
-            <th>Modificado</th>
+            <th>Mensaje</th>
           </tr>
         </thead>
         <tbody>
-          ${alertas.map(alert => `
-            <tr>
-              <td>${alert.descripcion}</td>
-              <td>${alert.campo}</td>
-              <td>${alert.cantidadExcel}</td>
-              <td>${alert.cantidadTransformada}</td>
-            </tr>
-          `).join('')}
-          ${duplicateAlerts.map(alert => `
-            <tr>
-              <td>${alert.descripcion}</td>
-              <td>Duplicado</td>
-              <td colspan="2"></td>
-            </tr>
-          `).join('')}
+          ${rows}
         </tbody>
       </table>
-    </div>`;
+    </div>
+  `;
 
-    Swal.fire({
-      title: "AVISO",
-      html: `<strong>Advertencias encontradas en el Excel</strong><br>${alertTableHtml}`,
-      icon: "warning",
-      iconColor: '#e31616',
-      width: "60%",
-      confirmButtonColor: '#7c7c7e'
-    });
-  }
+  Swal.fire({
+    title: "AVISO",
+    html: `
+      <strong>Advertencias encontradas en el Excel</strong><br>
+      ${alertTableHtml}
+    `,
+    icon: "warning",
+    iconColor: "#e31616",
+    width: "60%",
+    confirmButtonColor: "#7c7c7e"
+  });
 };

@@ -194,7 +194,7 @@ export default function RecensionView() {
       const datos = await fetchApi({
         endPoint:`/purchaseorder/ordersqlserver?recordsPorPagina=10&pagina=${newPage+1}&fechaDesde=${inicio}&fechaHasta=${fin}&codigoProveedor=${CardCode}&estado=TODAS`, 
         method:'GET', 
-        paginacion:false, 
+        paginacion:true, 
         headers:{
         "Content-Type": "application/json",
         "Authorization": "Bearer " + tokenId,
@@ -233,6 +233,7 @@ export default function RecensionView() {
    * Filtra las órdenes según los parámetros seleccionados.
    */
   const filtrarReportes = async () => { 
+    setPage(0);
     const validado = await validacion();
     if (validado === 1) {
       const tokenId = localStorage.getItem("token");
@@ -242,14 +243,14 @@ export default function RecensionView() {
       const datos = await fetchApi({
         endPoint: `/purchaseorder/ordersqlserver?pagina=1&recordsPorPagina=10&fechaDesde=${inicio}&fechaHasta=${fin}&codigoProveedor=${CardCode}&codigoOrden=${codigo}&estado=TODAS`, 
         method: 'GET', 
-        paginacion: false, 
+        paginacion: true, 
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer " + tokenId,
         }
       });
   
-      console.log("Datos recibidos de la API:", datos);
+      //console.log("Datos recibidos de la API:", datos);
   
       if (datos.error) {
         handleOrdenes();
@@ -258,10 +259,13 @@ export default function RecensionView() {
         setCodigoo(0);
         return;
       }
+      setCantItems(datos.totalRegistros);
       pasoSiguiente(datos.datos)
     } else {
       handleError();
-    }
+    };
+
+
   };
   
 

@@ -1,4 +1,3 @@
-// src/utils/descargarArchivo.js
 
 import Swal from "sweetalert2";
 

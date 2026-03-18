@@ -12,12 +12,19 @@ import Layout from './layouts/layout';
 import Login from './views/General/Login';
 import HomeView from './views/SuppliersModule/settings/Home'; /* VISTAS PROVEDORES */
 import Employer from './views/PurchasingModule/orders/OrdersDashboard'; /* VISTAS DEPT COMPRAS */
+
 import DevolucionesPagosView from './views/PaymentsModule/ReturnsDashboard'; /* VISTAS DEPT PAGOS */
+import EstadoCuentaPagosView from './views/PaymentsModule/AccountStateDashboard'; /* VISTAS DEPT PAGOS */
+
 import PagosView from './views/SuppliersModule/payments/PaymentsHistory';
 import { useEffect } from 'react';
 /* VISTAS PROVEDORES */
 const OrdersView = React.lazy(() => import('./views/SuppliersModule/orders/ApprovedOrders'));
 const RecensionView = React.lazy(() => import('./views/SuppliersModule/orders/SentSuggestions'));
+
+const AccountView = React.lazy(() => import('./views/SuppliersModule/payments/AccountState'));
+const UpdateSatateView = React.lazy(()=>import('./views/SuppliersModule/payments/RequestNewState'));
+
 const OrderSupplier = React.lazy(() => import('./views/SuppliersModule/orders/PurchaseOrders'));
 const NotasCreditoView = React.lazy(() => import('./views/SuppliersModule/returns/RetundHistory'));
 const HistoricoPrecioView = React.lazy(() => import('./views/SuppliersModule/prices/PriceHistory'));
@@ -27,6 +34,7 @@ const UpdatePriceView = React.lazy(() => import('./views/SuppliersModule/prices/
 const AutorizarView = React.lazy(() => import('./views/PurchasingModule/orders/OrdersDetails'));
 const PreciosView = React.lazy(() => import('./views/PurchasingModule/prices/PriceRequestsDashboard'));
 const AutorizarPreciosCompras = React.lazy(() => import('./views/PurchasingModule/prices/PriceRequestDetails'));
+const PedidosNotificaciones = React.lazy(() => import('./views/PurchasingModule/suggestions/SuggestionsDetails'));
 /* VISTAS EMPLEADOS MEGAS */
 /* VISTAS SISTEMAS */
 const RegView = React.lazy(() => import('./views/UserManagement/RegisterLanding'));
@@ -49,6 +57,7 @@ const SettingsView = React.lazy(() => import('./views/General/setting'));
  * 
  * @returns {JSX.Element} - El enrutador con las rutas.
  */
+
 function App() {
   const CardCode = useSelector((state) => state.auth.datos_Usuario.CARDCODE);
   const tokenId = localStorage.getItem("token");
@@ -97,6 +106,10 @@ function App() {
               <Route path='/home' element={<Layout><HomeView /></Layout>} />
               <Route path='/ordenes' element={<Layout><OrdersView/></Layout>} />
               <Route path='/enprogreso' element={<Layout><RecensionView /></Layout>} />
+
+              <Route path='/estadocuenta' element={<Layout><AccountView /></Layout>} />
+              <Route path='/estadocuenta/cargar' element={<Layout><UpdateSatateView /></Layout>} /> 
+
               <Route path='/pagosefectuados' element={<Layout><PagosView/></Layout>} />
               <Route path='/ordencompra' element={<Layout><OrderSupplier /></Layout>} />
               <Route path= '/devoluciones' element={<Layout><NotasCreditoView/></Layout>}/>
@@ -108,8 +121,10 @@ function App() {
               <Route path='/mesatrabajo/autorizacion' element={<Layout><AutorizarView /></Layout>} />
               <Route path='/mesatrabajoprecio' element={<Layout><PreciosView /></Layout>} />
               <Route path='/mesatrabajoprecio/autorizacion' element={<Layout><AutorizarPreciosCompras /></Layout>} />
+              <Route path='/sugeridosmegas' element={<Layout><PedidosNotificaciones /></Layout>} />
                 {/* VISTAS DEPT PAGOS */}
-              <Route path='/mesatrabajodevoluciones' element={<Layout><DevolucionesPagosView /></Layout>} />     
+              <Route path='/mesatrabajodevoluciones' element={<Layout><DevolucionesPagosView /></Layout>} />
+              <Route path='/estadocuentapagos' element={<Layout><EstadoCuentaPagosView /></Layout>} />          
 
               {/* VISTAS SISTEMAS */}
               <Route path='/registro' element={<Layout><RegView /></Layout>} />

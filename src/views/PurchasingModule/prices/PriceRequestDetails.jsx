@@ -490,7 +490,15 @@ export default function AutorizarPrecios() {
             Authorization: "Bearer " + tokenId,
           },
         });
-  
+
+        // Si hay un error distinto a 204, lanzamos
+          if (response.error && response.error !== "Error 204") {
+            throw new Error(response.error);
+          }
+
+          // de lo contrario, OK (o 204 que ya está implícito)
+          return response;
+  /*
         // Si la respuesta es 204, continuar sin lanzar error
         if (response.status === 204) {
           console.log(`Status 204: No content for item ${itemCode}.`);
@@ -501,7 +509,7 @@ export default function AutorizarPrecios() {
           throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
   
-        return response;
+        return response;*/
       });
   
       await Promise.all(primeraPeticion);
@@ -512,9 +520,14 @@ export default function AutorizarPrecios() {
         html: `
           <div style="text-align: left;">
             <ul>
-              <li><input type="checkbox" id="email1"> email1@example.com</li>
-              <li><input type="checkbox" id="email2"> email2@example.com</li>
-              <li><input type="checkbox" id="email3"> email3@example.com</li>
+              <li><input type="checkbox" id="email1"> administracionam@megatiendadelsur.com.ec</li>
+              <li><input type="checkbox" id="email2"> administracionch@megatiendadelsur.com.ec</li>
+              <li><input type="checkbox" id="email3"> administracionri@megatiendadelsur.com.ec</li>
+              <li><input type="checkbox" id="email4"> administracionrc@megatiendadelsur.com.ec</li>
+              <li><input type="checkbox" id="email5"> administracionfl@megatiendadelsur.com.ec</li>
+              <li><input type="checkbox" id="email6"> administracionaz@megatiendadelsur.com.ec</li>
+              <li><input type="checkbox" id="email7"> administracionnueve@megatiendadelsur.com.ec</li>
+              <li><input type="checkbox" id="email8"> saraguro@megatiendadelsur.com.ec</li>
             </ul>
           </div>
         `,
@@ -530,37 +543,90 @@ export default function AutorizarPrecios() {
          */
         preConfirm: () => {
           const selectedEmails = [];
-          if (document.getElementById("email1").checked) selectedEmails.push("email1@example.com");
-          if (document.getElementById("email2").checked) selectedEmails.push("email2@example.com");
-          if (document.getElementById("email3").checked) selectedEmails.push("email3@example.com");
+          if (document.getElementById("email1").checked) selectedEmails.push("administracionam@megatiendadelsur.com.ec");
+          if (document.getElementById("email2").checked) selectedEmails.push("administracionch@megatiendadelsur.com.ec");
+          if (document.getElementById("email3").checked) selectedEmails.push("administracionri@megatiendadelsur.com.ec");
+          if (document.getElementById("email4").checked) selectedEmails.push("administracionrc@megatiendadelsur.com.ec");
+          if (document.getElementById("email5").checked) selectedEmails.push("administracionfl@megatiendadelsur.com.ec");
+          if (document.getElementById("email6").checked) selectedEmails.push("administracionaz@megatiendadelsur.com.ec");
+          if (document.getElementById("email7").checked) selectedEmails.push("administracionnueve@megatiendadelsur.com.ec");
+          if (document.getElementById("email8").checked) selectedEmails.push("saraguro@megatiendadelsur.com.ec");
+          if (selectedEmails.length === 0) {
+            Swal.showValidationMessage("Seleccione al menos un correo electrónico");
+          }
           return selectedEmails;
         },
       }).then(async (result) => {
-        if (result.isConfirmed) {
-          const selectedEmails = result.value;
-          try {
-            await fetchApi({
-              endPoint: `/emails/send`,
-              method: "POST",
-              body: { emails: selectedEmails },
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + tokenId,
-              },
-            });
+        // if (result.isConfirmed) {
+        //   const selectedEmails = result.value;
+        //   try {
+        //     await fetchApi({
+        //       endPoint: `/emails/send`,
+        //       method: "POST",
+        //       body: {
+        //         emails: selectedEmails,
+        //         asunto: `Autorización de precios - Solicitud #${datosPedidos.id}`,
+        //         mensaje: `
+        //           Se ha autorizado la solicitud de actualización de precios:
+        //           - Proveedor: ${datosPedidos.nombreProveedor}
+        //           - Solicitante: ${datosPedidos.solicitante}
+        //           - Fecha: ${new Date(datosPedidos.fechaEntrega).toLocaleDateString("es")}
+        //           - Número de productos autorizados: ${itemsUnicos.length}
+        //         `,
+        //         detalles: itemsUnicos.map(item => ({
+        //           codigo: item.codigoConorque,
+        //           descripcion: item.descripcion
+        //         }))
+        //       },
+        //       headers: {
+        //         "Content-Type": "application/json",
+        //         Authorization: "Bearer " + tokenId,
+        //       },
+        //     });
   
-            Swal.fire({
-              title: "Actualización enviada correctamente",
-              icon: "success",
-              timer: 1500,
-            });
-          } catch (error) {
-            Swal.fire({
-              icon: "warning",
-              title: "Actualización exitosa, pero falló el envío de correos",
-              text: error.message,
-            });
-          }
+        //     Swal.fire({
+        //       title: "Actualización enviada correctamente",
+        //       icon: "success",
+        //       timer: 1500,
+        //     });
+        //   } catch (error) {
+        //     Swal.fire({
+        //       icon: "warning",
+        //       title: "Actualización exitosa, pero falló el envío de correos",
+        //       text: error.message,
+        //     });
+        //   }
+        // }
+        if (result.isConfirmed) {
+          
+          const emails = result.value;
+          const proveedor = datosPedidos.nombreProveedor;
+
+          // Construir tabla de productos aprobados
+          const tablaCSV = itemsUnicos.map(item =>
+            `${item.codigoPrincipal}; ${item.descripcion}`
+          ).join("%0D%0A");
+
+          const mensaje = [
+            "Estimado Administrador",
+            "Se actualizaron los precios de algunos productos, por favor recupere los productos actualizados directamente en su plataforma.",
+            "",
+            "Listado de productos actualizados:",
+            "Código; Descripción",
+            tablaCSV
+            ].join("%0D%0A");
+
+          const asunto = encodeURIComponent(`Actualización de los precios del Proveedor ${proveedor}`);
+
+          const mailtoLink = `mailto:${emails.join(",")}?subject=${asunto}&body=${mensaje}`;
+          window.location.href = mailtoLink;
+
+          Swal.fire({
+            title: "Abriendo tu cliente de correo...",
+            icon: "info",
+            timer: 2000,
+            showConfirmButton: false
+          });
         }
       });
   
@@ -676,7 +742,7 @@ export default function AutorizarPrecios() {
     
     // Filtra los items aprobados y elimina duplicados
     const itemsUnicos = items.filter(item => {
-      if (item.estado === "APROBADO" && !codigos.has(item.codigoConorque)) {
+      if (item.aprobacion == true && !codigos.has(item.codigoConorque)) {
         codigos.add(item.codigoConorque);
         return true;
       }
@@ -968,6 +1034,24 @@ export default function AutorizarPrecios() {
       });
     }
 };
+const handleAprAll = () => {
+  setItems((prevItems) =>
+    prevItems.map((it) =>
+      it.estado === "PARA REVISION"
+        ? { ...it, aprobacion: true }
+        : it
+    )
+  );
+};
+const handleDesaprAll = () => {
+  setItems((prevItems) =>
+    prevItems.map((it) =>
+      it.estado === "PARA REVISION"
+        ? { ...it, aprobacion: false }
+        : it
+    )
+  );
+};
 
   useEffect(() => {
     getData();
@@ -1152,6 +1236,32 @@ export default function AutorizarPrecios() {
           </div>
         </div>
         <div className="panel">
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: "0.5rem",         // separación entre los botones
+              marginBottom: "0.5rem",
+            }}
+          >
+            <button
+              className="boton-superior"
+              style={{ background: "#06ac2e" }}
+              onClick={handleAprAll}
+            >
+              APR ALL
+            </button>
+
+            <button
+              className="boton-superior"
+              style={{ background: "#0680acff" }}
+              onClick={handleDesaprAll}
+            >
+              DESAPR ALL
+            </button>
+          </div>
+
+
           <table className="table table-ligh table-hover">
             <thead>
               <tr className="text-center">

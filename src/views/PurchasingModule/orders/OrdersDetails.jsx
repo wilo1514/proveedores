@@ -60,8 +60,8 @@ export default function DuplicadoView() {
   const [lectComentario, setLectComentario] = useState("");
   const [pageP, setPageP] = useState(0);
   const ventasMensuales = datosAnalisis;
-  const ventas2024 = ventasMensuales.filter((venta) => venta.year === 2024);
-  const ventas2025 = ventasMensuales.filter((venta) => venta.year === 2025);
+  const ventas2024 = ventasMensuales.filter((venta) => venta.year === 2025);
+  const ventas2025 = ventasMensuales.filter((venta) => venta.year === 2026);
   const [showAlert, setShowAlert] = useState(false);
   const [loading, setLoading] = useState(false);
 

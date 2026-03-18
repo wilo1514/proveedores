@@ -15,8 +15,7 @@ import Container from "../../../components/Container";
 import Modal from "../../../components/Modal";
 import DotSpinner from "../../../components/DotSpinner";
 import fetchApi from "../../../utils/fechtData";
-import Swal from 'sweetalert2';
-
+import Swal from "sweetalert2";
 
 import LogoFinal from "../../../assets/images/conorque2.avif";
 import Icon from "../../../assets/iconos/eye.svg";
@@ -31,7 +30,8 @@ import "../../../css/EmpleadosMegas/Employees.css";
 export default function OrdersView() {
   const CardCode = useSelector((state) => state.auth.datos_Usuario.CARDCODE);
   const navigate = useNavigate();
-    // Estados para almacenar información relevante de las órdenes
+
+  // Estados
   const [data, setData] = useState([]);
   const [datosSucursal, setdatosSucursal] = useState([]);
   const [page, setPage] = useState(0);
@@ -39,73 +39,33 @@ export default function OrdersView() {
   const [rowsPerPage] = useState(10);
   const [rowsPerPageProduct] = useState(8);
   const [cantItems, setCantItems] = useState(0);
+
+  // Filtros
   const [estadoo, setEstadoo] = useState("");
   const [sucursal, setSucursal] = useState("");
   const [codigoo, setCodigoo] = useState(0);
+
   const [reset, setReset] = useState(false);
   const [loading, setLoading] = useState(false);
-  
-    /**
-   * Maneja la selección de una sucursal del dropdown.
-   * @param {Event} event - Evento de selección.
-   */
-  const handleSucursal = (event) => {
-    const nombreSucursal = event.target.value;
-    const sucursalSeleccionada = datosSucursal.find(
-      (suc) => suc.whsName === nombreSucursal
-    );
-    setSucursal(sucursalSeleccionada ? sucursalSeleccionada.whsCode : "");
-  };
 
-    /**
-   * Maneja el cambio de número de orden ingresado.
-   * @param {Event} e - Evento del input.
-   */
-  const handleCodigo = (e) => {
-    const docNum = e.target.value;
-    if (!isNaN(docNum)) {
-      setCodigoo(docNum);
-    } else {
-      setCodigoo(1);
-    }
-  };
-
-    /**
-   * Maneja el cambio del estado seleccionado.
-   * @param {Event} event - Evento de selección.
-   */
-  const handleStatus = (event) => {
-    setEstadoo(event.target.value);
-  };
-
-
-
-  const [modalVisualizar, setModalVisualizar] = useState(false);
-  const [productos, setProductos] = useState([]);
-  const [productosf, setProductosf] = useState({});
+  // --- Helpers UI ---
   const claseEstado = (idEstado) => {
-    let sColor = "blanco";
     switch (idEstado) {
       case "POR DESPACHAR":
-        sColor = "tomate";
-        break;
+        return "tomate";
       case "ENTREGADO":
-        sColor = "azul";
-        break;
+        return "azul";
       case "FACTURADO":
-        sColor = "morado";
-        break;
+        return "morado";
       case "PAGADO":
-        sColor = "verde";
-        break;
+        return "verde";
       case "CANCELADO":
-        sColor = "rojo";
-        break;
+        return "rojo";
       default:
-        break;
+        return "blanco";
     }
-    return sColor;
   };
+
   const estadosp = [
     { label: "POR DESPACHAR" },
     { label: "ENTREGADO" },
@@ -114,6 +74,25 @@ export default function OrdersView() {
     { label: "CANCELADO" },
   ];
 
+  // --- Handlers filtros ---
+  const handleSucursal = (event) => {
+    const nombreSucursal = event.target.value;
+    const sucursalSeleccionada = datosSucursal.find(
+      (suc) => suc.whsName === nombreSucursal
+    );
+    setSucursal(sucursalSeleccionada ? sucursalSeleccionada.whsCode : "");
+  };
+
+  const handleCodigo = (e) => {
+    const docNum = e.target.value;
+    setCodigoo(/^\d+$/.test(docNum) ? Number(docNum) : 0);
+  };
+
+  const handleStatus = (event) => {
+    setEstadoo(event.target.value);
+  };
+
+  // --- Errores / Alerts ---
   const handleError = () => {
     Swal.fire({
       position: "center",
@@ -146,55 +125,37 @@ export default function OrdersView() {
       position: "center",
       icon: "warning",
       title: "ORDENES INEXISTENTES",
-      text: "No se encontro ordenes con esos parámetro",
+      text: "No se encontraron órdenes con esos parámetros",
       showConfirmButton: false,
       timer: 5000,
     });
   };
 
-  const descargarPdf = async (datos_orden, setLoading) => {
-    setLoading(true);
+  // --- PDF ---
+  const descargarPdf = async (datos_orden, setLoadingBtn) => {
+    setLoadingBtn(true);
     try {
-      const validado = await validacion();
-      if (validado === 1) {
-        const tokenId = localStorage.getItem("token");
-        const datos = await fetchApi({
-          endPoint: `/purchaseorder/printpdforder/${datos_orden.docNum}`,
-          method: "GET",
-          paginacion: false,
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${tokenId}`,
-          },
-        });
+      const ok = await validacion();
+      if (ok !== 1) return handleError();
 
-        if (datos.error) {
-          handleErrorSis(datos.error);
-          setLoading(false);
-          return;
-        }
+      const tokenId = localStorage.getItem("token");
+      const datos = await fetchApi({
+        endPoint: `/purchaseorder/printpdforder/${datos_orden.docNum}`,
+        method: "GET",
+        paginacion: false,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${tokenId}`,
+        },
+      });
 
-        const base64Pdf = datos.datos;
-        descargarBlobComoPdf(base64Pdf);
-      } else {
-        handleError();
-      }
-    } catch (error) {
-      console.error("Error al descargar el PDF:", error);
-      handleErrorSis("Error al descargar el PDF");
-    } finally {
-      setLoading(false);
-    }
-  };
+      if (datos.error) return handleErrorSis(datos.error);
 
-  const descargarBlobComoPdf = (base64Pdf) => {
-    try {
+      const base64Pdf = datos.datos;
       const binStr = window.atob(base64Pdf);
       const len = binStr.length;
       const arr = new Uint8Array(len);
-      for (let i = 0; i < len; i++) {
-        arr[i] = binStr.charCodeAt(i);
-      }
+      for (let i = 0; i < len; i++) arr[i] = binStr.charCodeAt(i);
       const blob = new Blob([arr], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -204,237 +165,190 @@ export default function OrdersView() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    } catch (error) {
-      console.error("Error al descargar el PDF:", error);
+    } catch (e) {
+      console.error("Error al descargar el PDF:", e);
+      handleErrorSis("Error al descargar el PDF");
+    } finally {
+      setLoadingBtn(false);
     }
   };
 
   const PdfDownloadButton = ({ item, isDisabled }) => {
-    const [loading, setLoading] = useState(false);
-
-    return (
-      <>
-        {loading ? (
-          <DotSpinner />
-        ) : (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="#283756"
-            height="1.3rem"
-            onClick={() => {
-              if (!isDisabled) descargarPdf(item, setLoading);
-            }}
-            style={{
-              cursor: isDisabled ? "not-allowed" : "pointer",
-              opacity: isDisabled ? 0.3 : 1,
-            }}
-          >
-            <path
-              fillRule="evenodd"
-              d="M7.875 1.5C6.839 1.5 6 2.34 6 3.375v2.99c-.426.053-.851.11-1.274.174-1.454.218-2.476 1.483-2.476 2.917v6.294a3 3 0 0 0 3 3h.27l-.155 1.705A1.875 1.875 0 0 0 7.232 22.5h9.536a1.875 1.875 0 0 0 1.867-2.045l-.155-1.705h.27a3 3 0 0 0 3-3V9.456c0-1.434-1.022-2.7-2.476-2.917A48.716 48.716 0 0 0 18 6.366V3.375c0-1.036-.84-1.875-1.875-1.875h-8.25ZM16.5 6.205v-2.83A.375.375 0 0 0 16.125 3h-8.25a.375.375 0 0 0-.375.375v2.83a49.353 49.353 0 0 1 9 0Zm-.217 8.265c.178.018.317.16.333.337l.526 5.784a.375.375 0 0 1-.374.409H7.232a.375.375 0 0 1-.374-.409l.526-5.784a.373.373 0 0 1 .333-.337 41.741 41.741 0 0 1 8.566 0Zm.967-3.97a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H18a.75.75 0 0 1-.75-.75V10.5ZM15 9.75a.75.75 0 0 0-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 0 0 .75-.75V10.5a.75.75 0 0 0-.75-.75H15Z"
-              clipRule="evenodd"
-            />
-          </svg>
-        )}
-      </>
+    const [loadingBtn, setLoadingBtn] = useState(false);
+    return loadingBtn ? (
+      <DotSpinner />
+    ) : (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="#283756"
+        height="1.3rem"
+        onClick={() => {
+          if (!isDisabled) descargarPdf(item, setLoadingBtn);
+        }}
+        style={{
+          cursor: isDisabled ? "not-allowed" : "pointer",
+          opacity: isDisabled ? 0.3 : 1,
+        }}
+      >
+        <path
+          fillRule="evenodd"
+          d="M7.875 1.5C6.839 1.5 6 2.34 6 3.375v2.99c-.426.053-.851.11-1.274.174-1.454.218-2.476 1.483-2.476 2.917v6.294a3 3 0 0 0 3 3h.27l-.155 1.705A1.875 1.875 0 0 0 7.232 22.5h9.536a1.875 1.875 0 0 0 1.867-2.045l-.155-1.705h.27a3 3 0 0 0 3-3V9.456c0-1.434-1.022-2.7-2.476-2.917A48.716 48.716 0 0 0 18 6.366V3.375c0-1.036-.84-1.875-1.875-1.875h-8.25ZM16.5 6.205v-2.83A.375.375 0 0 0 16.125 3h-8.25a.375.375 0 0 0-.375.375v2.83a49.353 49.353 0 0 1 9 0Zm-.217 8.265c.178.018.317.16.333.337l.526 5.784a.375.375 0 0 1-.374.409H7.232a.375.375 0 0 1-.374-.409l.526-5.784a.373.373 0 0 1 .333-.337 41.741 41.741 0 0 1 8.566 0Zm.967-3.97a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H18a.75.75 0 0 1-.75-.75V10.5ZM15 9.75a.75.75 0 0 0-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 0 0 .75-.75V10.5a.75.75 0 0 0-.75-.75H15Z"
+          clipRule="evenodd"
+        />
+      </svg>
     );
   };
 
+  // --- Modal detalle ---
+  const [modalVisualizar, setModalVisualizar] = useState(false);
+  const [productos, setProductos] = useState([]);
+  const [productosf, setProductosf] = useState({});
+
   const cerrarModalVisualizar = () => {
-    setModalVisualizar(!modalVisualizar);
+    setModalVisualizar(false);
     setPageP(0);
   };
+
   const abrirModalVisualizar = async (datos_orden) => {
-    const validado = await validacion();
-    if (validado === 1) {
+    const ok = await validacion();
+    if (ok !== 1) return handleError();
+
+    const tokenId = localStorage.getItem("token");
+    const datos = await fetchApi({
+      endPoint: `/purchaseorder/${datos_orden.docNum}`,
+      method: "GET",
+      paginacion: false,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + tokenId,
+      },
+    });
+
+    if (datos.error) return handleErrorSis(datos.error);
+
+    const p = datos.datos || {};
+    setProductos(p.details || []);
+    setProductosf(p);
+    setModalVisualizar(true);
+  };
+
+  // =====================================================
+  //    ÚNICO MÉTODO DE CARGA (inicial, paginación, filtros)
+  // =====================================================
+  const loadPage = async ({ pageUI = 0, includeTotal = false } = {}) => {
+    const ok = await validacion();
+    if (ok !== 1) {
+      handleError();
+      return 0;
+    }
+
+    try {
+      setLoading(true);
       const tokenId = localStorage.getItem("token");
+
+      // Siempre pagina y recordsPorPagina
+      const params = new URLSearchParams();
+      params.set("pagina", String(pageUI + 1));
+      params.set("recordsPorPagina", String(rowsPerPage));
+      if (sucursal) params.set("whsCode", sucursal);
+      if (estadoo) params.set("status", estadoo);
+      if (codigoo && Number(codigoo) > 0) params.set("docNum", String(codigoo));
+
       const datos = await fetchApi({
-        endPoint: `/purchaseorder/${datos_orden.docNum}`,
+        endPoint: `/purchaseorder/${CardCode}?${params.toString()}`,
         method: "GET",
-        paginacion: false,
+        paginacion: includeTotal, // cuando queremos totalRegistros
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + tokenId,
         },
       });
-
       if (datos.error) {
         handleErrorSis(datos.error);
-        return;
+        return 0;
       }
 
-      listadoproductos(datos.datos);
-      setModalVisualizar(!modalVisualizar);
-    } else {
-      handleError();
+      // Actualiza totalRegistros solo si se pidió
+      if (includeTotal && typeof datos.totalRegistros === "number") {
+        setCantItems(datos.totalRegistros);
+      }
+
+      const info = Array.isArray(datos.datos) ? datos.datos : [];
+      setData(info);
+      setPage(pageUI);
+      return info.length;
+    } catch (e) {
+      handleErrorSis(e);
+      return 0;
+    } finally {
+      setLoading(false);
     }
   };
 
-  const listadoproductos = (products) => {
-    setProductos(products.details);
-    setProductosf(products);
+  // --- Paginación tabla principal ---
+  const handleChangePage = async (_event, newPage) => {
+    await loadPage({ pageUI: newPage, includeTotal: false });
   };
 
-  const handleChangePage = async (event, newPage) => {
-    const validado = await validacion();
-    if (validado === 1) {
-      const tokenId = localStorage.getItem("token");
-      setPage(newPage);
-      const datos = await fetchApi({
-        endPoint: `/purchaseorder/${CardCode}?pagina=${newPage + 1}&recordsPorPagina=10&whsCode=${sucursal}&status=${estadoo}&docNum=${codigoo}`,
-        method: "GET",
-        paginacion: false,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + tokenId,
-        },
-      });
-
-      if (datos.error) {
-        handleErrorSis(datos.error);
-        return;
-      }
-      pasoSiguiente(datos.datos);
-    } else {
-      handleError();
-    }
-  };
-
-  const handleChangePageProduct = (event, newPage) => {
+  // --- Paginación tabla productos del modal ---
+  const handleChangePageProduct = (_event, newPage) => {
     setPageP(newPage);
   };
 
-     /**
-   * Obtiene la lista de sucursales.
-   */ 
+  // --- Sucursales ---
   const getSucursales = async () => {
-    const validado = await validacion();
-    if (validado === 1) {
-      const tokenId = localStorage.getItem("token");
-      const datos = await fetchApi({
-        endPoint: `/warehouse/ObtenerSucursales`,
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${tokenId}`,
-        },
-        paginacion: false,
-      });
+    const ok = await validacion();
+    if (ok !== 1) return handleError();
 
-      if (datos.error) {
-        console.error(datos.error);
-        return;
-      }
+    const tokenId = localStorage.getItem("token");
+    const datos = await fetchApi({
+      endPoint: `/warehouse/ObtenerSucursales`,
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${tokenId}`,
+      },
+      paginacion: false,
+    });
 
-      if (datos.datos && Array.isArray(datos.datos)) {
-        const sucursales = datos.datos.map((sucursal) => ({
-          whsCode: sucursal.whsCode,
-          whsName: sucursal.whsName || "",
-        }));
-        setdatosSucursal(sucursales);
-      }
-    } else {
-      handleError();
+    if (datos.error) {
+      console.error(datos.error);
+      return;
+    }
+
+    if (datos.datos && Array.isArray(datos.datos)) {
+      const sucursales = datos.datos.map((s) => ({
+        whsCode: s.whsCode,
+        whsName: s.whsName || "",
+      }));
+      setdatosSucursal(sucursales);
     }
   };
 
+  // --- Reiniciar filtros y recargar ---
   const reinicirarDatos = async () => {
-    const validado = await validacion();
-    if (validado === 1) {
-      setPage(0);
-      getData();
-      setReset(!reset);
-      setCodigoo(0);
-      setSucursal("");
-      setEstadoo("");
-    } else {
-      handleError();
-    }
+    const ok = await validacion();
+    if (ok !== 1) return handleError();
+
+    setSucursal("");
+    setEstadoo("");
+    setCodigoo(0);
+    setReset((r) => !r);
+    await loadPage({ pageUI: 0, includeTotal: true });
   };
 
+  // --- Aplicar filtros (misma función de carga) ---
   const filtrarReportes = async () => {
-    const validado = await validacion();
-    if (validado === 1) {
-      const tokenId = localStorage.getItem("token");
-      const datos = await fetchApi({
-        endPoint: `/purchaseorder/${CardCode}?pagina=1&recordsPorPagina=10&whsCode=${sucursal}&status=${estadoo}&docNum=${codigoo}`,
-        method: "GET",
-        paginacion: true,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + tokenId,
-        },
-      });
-      if (datos.error) {
-        setLoading(false);
-        setReset(!reset);
-        setCodigoo(0);
-        setTimeout(() => handleOrdenes(), 1000);}
-      setCantItems(datos.totalRegistros);
-      pasoFiltrar(datos.datos);
-      setPage(0);
-      const cantidad = datos.datos.length;
-      if (cantidad === 0) {
-        setLoading(false);
-        reinicirarDatos();
-        setTimeout(() => handleOrdenes(), 1000);}
-    } else {
-      setLoading(false);
-      handleError();
-    }
-  };
-  
-
-  const pasoFiltrar = (info) => {
-    if (data.length !== 0) {
-      return setData(info);
-    } else {
-      handleOrdenes();
-    }
+    const count = await loadPage({ pageUI: 0, includeTotal: true });
+    if (count === 0) handleOrdenes();
   };
 
-  /**
-   * Obtiene las órdenes de compra del proveedor autenticado.
-   */
-  const getData = async () => {
-    const validado = await validacion();
-    if (validado === 1) {
-      const tokenId = localStorage.getItem("token");
-      setLoading(true);
-      const datos = await fetchApi({
-        endPoint: `/purchaseorder/${CardCode}`,
-        method: "GET",
-        paginacion: true,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + tokenId,
-        },
-      });
-      if (datos.error) {
-        handleErrorSis(datos.error);
-        return;
-      }
-      setCantItems(datos.totalRegistros);
-      pasoSiguiente(datos.datos);
-    } else {
-      handleError();
-    }
-  };
-
-    /**
-   * Maneja los datos obtenidos de la API.
-   * @param {Array} info - Datos de las órdenes de compra.
-   */
-  const pasoSiguiente = (info) => {
-    setData(info);
-    setLoading(false);
-  };
-
-    // Llamar a las funciones para obtener datos al cargar el componente
+  // --- Carga inicial ---
   useEffect(() => {
     getSucursales();
-    getData();
+    loadPage({ pageUI: 0, includeTotal: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -448,8 +362,8 @@ export default function OrdersView() {
               <select
                 className="select-dashboard"
                 value={
-                  datosSucursal.find((suc) => suc.whsCode === sucursal)
-                    ?.whsName || ""
+                  datosSucursal.find((s) => s.whsCode === sucursal)?.whsName ||
+                  ""
                 }
                 onChange={handleSucursal}
               >
@@ -495,8 +409,8 @@ export default function OrdersView() {
             <div className="panel-item">
               <Stack
                 direction="row"
-                alignItems={"center"}
-                justifyContent={"space-between"}
+                alignItems="center"
+                justifyContent="space-between"
                 spacing={2}
               >
                 <button
@@ -509,7 +423,6 @@ export default function OrdersView() {
                       display: "flex",
                       justifyContent: "space-evenly",
                       alignItems: "center",
-                      spacing: "5px",
                     }}
                   >
                     <svg
@@ -524,7 +437,7 @@ export default function OrdersView() {
                         fill="Currentcolor"
                       />
                     </svg>
-                    <span style={{ marginLeft: "5px" }}>FILTRAR</span>
+                    <span style={{ marginLeft: 5 }}>FILTRAR</span>
                   </div>
                 </button>
 
@@ -538,7 +451,6 @@ export default function OrdersView() {
                       display: "flex",
                       justifyContent: "space-evenly",
                       alignItems: "center",
-                      spacing: "5px",
                     }}
                   >
                     <svg
@@ -557,8 +469,7 @@ export default function OrdersView() {
                         fill="Currentcolor"
                       />
                     </svg>
-
-                    <span style={{ marginLeft: "5px" }}>Reiniciar</span>
+                    <span style={{ marginLeft: 5 }}>Reiniciar</span>
                   </div>
                 </button>
               </Stack>
@@ -609,18 +520,16 @@ export default function OrdersView() {
                       <td className="center">
                         <Stack
                           spacing={2}
-                          direction={"row"}
-                          justifyContent={"center"}
+                          direction="row"
+                          justifyContent="center"
                         >
-                            <img src={Icon}
-                              onClick={() => {
-                                abrirModalVisualizar(item);
-                              }}
-                            />
-                            <PdfDownloadButton
-                              item={item}
-                              isDisabled={isDisabled}
-                            />
+                          <img
+                            src={Icon}
+                            alt="Ver orden"
+                            onClick={() => abrirModalVisualizar(item)}
+                            style={{ cursor: "pointer" }}
+                          />
+                          <PdfDownloadButton item={item} isDisabled={isDisabled} />
                         </Stack>
                       </td>
                     </tr>
@@ -643,16 +552,14 @@ export default function OrdersView() {
 
       <Modal
         isOpen={modalVisualizar}
-        onClose={() => {
-          cerrarModalVisualizar();
-        }}
+        onClose={cerrarModalVisualizar}
         title=""
         size="lg"
         className="Pruebas"
       >
-        <Grid container spacing={2} style={{backgroundColor:"#fff"}}>
+        <Grid container spacing={2} style={{ backgroundColor: "#fff" }}>
           <Grid item xs={12} sm={12} md={6}>
-            <Grid container spacing={2} style={{backgroundColor:"#fff"}}>
+            <Grid container spacing={2} style={{ backgroundColor: "#fff" }}>
               <Grid item xs={12} sm={6} md={12}>
                 <div className="contenedorImagenvisua">
                   <img src={LogoFinal} height={100} alt="" />
@@ -660,7 +567,7 @@ export default function OrdersView() {
               </Grid>
               <Grid item xs={12} sm={6} md={12}>
                 <div className="izquierdaa">
-                  <Stack spacing={2} direction={"column"}>
+                  <Stack spacing={2} direction="column">
                     <p className="texto_conorque"> CONORQUE CIA LTDA</p>
                     <p className="texto_factura">
                       <strong>Dir. Matriz:</strong> Circunvalacion Sur Sn y
@@ -677,17 +584,12 @@ export default function OrdersView() {
           </Grid>
           <Grid item xs={12} sm={12} md={6}>
             <div className="derechaa">
-              <Stack spacing={2} direction={"column"}>
+              <Stack spacing={2} direction="column">
                 <p className="texto_fac">
                   <strong>ORDEN</strong> # {productosf.docNum}
                 </p>
                 <li className="li-tv">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="#1dbb3a"
-                    height="1.5rem"
-                  >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#1dbb3a" height="1.5rem">
                     <path d="M12.75 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM7.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM8.25 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM9.75 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM10.5 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM12.75 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM14.25 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 13.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" />
                     <path
                       fillRule="evenodd"
@@ -705,12 +607,7 @@ export default function OrdersView() {
                   </p>
                 </li>
                 <li className="li-tv">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="#1dbb3a"
-                    height="1.5rem"
-                  >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#1dbb3a" height="1.5rem">
                     <path d="M3.375 4.5C2.339 4.5 1.5 5.34 1.5 6.375V13.5h12V6.375c0-1.036-.84-1.875-1.875-1.875h-8.25ZM13.5 15h-12v2.625c0 1.035.84 1.875 1.875 1.875h.375a3 3 0 1 1 6 0h3a.75.75 0 0 0 .75-.75V15Z" />
                     <path d="M8.25 19.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0ZM15.75 6.75a.75.75 0 0 0-.75.75v11.25c0 .087.015.17.042.248a3 3 0 0 1 5.958.464c.853-.175 1.522-.935 1.464-1.883a18.659 18.659 0 0 0-3.732-10.104 1.837 1.837 0 0 0-1.47-.725H15.75Z" />
                     <path d="M19.5 19.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z" />
@@ -725,18 +622,8 @@ export default function OrdersView() {
                   </p>
                 </li>
                 <li className="li-tv">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="#1dbb3a"
-                    height="1.5rem"
-                  >
-                    <path d="M5.223 2.25c-.497 0-.974.198-1.325.55l-1.3 1.298A3.75 3.75 0 0 0 7.5 9.75c.627.47 1.406.75 2.25.75.844 0 1.624-.28 2.25-.75.626.47 1.406.75 2.25.75.844 0 1.623-.28 2.25-.75a3.75 3.75 0 0 0 4.902-5.652l-1.3-1.299a1.875 1.875 0 0 0-1.325-.549H5.223Z" />
-                    <path
-                      fillRule="evenodd"
-                      d="M3 20.25v-8.755c1.42.674 3.08.673 4.5 0A5.234 5.234 0 0 0 9.75 12c.804 0 1.568-.182 2.25-.506a5.234 5.234 0 0 0 2.25.506c.804 0 1.567-.182 2.25-.506 1.42.674 3.08.675 4.5.001v8.755h.75a.75.75 0 0 1 0 1.5H2.25a.75.75 0 0 1 0-1.5H3Zm3-6a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75v3a.75.75 0 0 1-.75.75h-3a.75.75 0 0 1-.75-.75v-3Zm8.25-.75a.75.75 0 0 0-.75.75v5.25c0 .414.336.75.75.75h3a.75.75 0 0 0 .75-.75v-5.25a.75.75 0 0 0-.75-.75h-3Z"
-                      clipRule="evenodd"
-                    />
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#1dbb3a" height="1.5rem">
+                    <path d="M3 6a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v7.5a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6Z" />
                   </svg>
                   <p className="texto_indicador">
                     <strong>Almacen: </strong>
@@ -744,12 +631,7 @@ export default function OrdersView() {
                   </p>
                 </li>
                 <li className="li-tv">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="#1dbb3a"
-                    height="1.5rem"
-                  >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#1dbb3a" height="1.5rem">
                     <path
                       fillRule="evenodd"
                       d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
@@ -824,7 +706,7 @@ export default function OrdersView() {
           </Grid>
           <Grid item xs={12} sm={12} md={7}></Grid>
           <Grid item xs={12} sm={12} md={5}>
-            <Stack spacing={2} direction={"column"}>
+            <Stack spacing={2} direction="column">
               <table className="table table-ligh table-hover">
                 <tbody>
                   <tr>
